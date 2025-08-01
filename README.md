@@ -3,6 +3,9 @@
 A beautiful Frappe app to **generate** and **visualize** whitelisted APIs with interactive Swagger UI documentation.
 
 ---
+<img width="1339" height="729" alt="Screenshot 2025-07-25 at 10 09 30 AM" src="https://github.com/user-attachments/assets/90279305-347f-4bd3-977a-c7910f0c107b" />
+
+
 
 ## Features
 
@@ -17,7 +20,7 @@ A beautiful Frappe app to **generate** and **visualize** whitelisted APIs with i
 1. **Install the app** in your Frappe site.
 2. **Run `bench migrate`** to apply changes and update your site.
 3. **Run the OpenAPI generator**.
-4. **Access the API Explorer UI** at `/docs`.
+4. **Access the API Explorer UI** at `/docs` or `/redoc`.
 5. **Select an app** from the sidebar to view its API documentation.
 6. **Try out endpoints** directly from the Swagger UI.
 
