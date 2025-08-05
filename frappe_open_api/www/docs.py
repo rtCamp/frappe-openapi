@@ -1,5 +1,7 @@
 import frappe
+
 from frappe_open_api.frappe_open_api.generate_api_docs import get_app_title_and_version
+
 
 def get_context(context):
     context.apps = frappe.get_installed_apps()

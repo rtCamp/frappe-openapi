@@ -1,27 +1,27 @@
 # This script generates an OpenAPI 3.0 specification for all frappe.whitelist endpoints in a given app.
 # Usage: python generate_openapi.py <app_name>
-import os
-import json
 import ast
-import re
-import frappe
 import importlib
 import importlib.util
+import json
+import os
+import re
+
+import frappe
+from frappe.utils import update_progress_bar
 
 DEFAULT_METHODS = ["get", "post", "put", "delete"]
 
+
 def find_python_files(base_path):
-    return [
-        os.path.join(root, file)
-        for root, _, files in os.walk(base_path)
-        for file in files if file.endswith(".py")
-    ]
+    return [os.path.join(root, file) for root, _, files in os.walk(base_path) for file in files if file.endswith(".py")]
+
 
 def get_decorator_info(decorator_list):
     methods, allow_guest = None, False
     for deco in decorator_list:
-        func = getattr(deco, 'func', deco)
-        name = getattr(func, 'attr', getattr(func, 'id', None))
+        func = getattr(deco, "func", deco)
+        name = getattr(func, "attr", getattr(func, "id", None))
         if name == "whitelist":
             # Methods
             if isinstance(deco, ast.Call):
@@ -35,6 +35,7 @@ def get_decorator_info(decorator_list):
                     elif kw.arg == "allow_guest" and isinstance(kw.value, ast.Constant):
                         allow_guest = bool(kw.value.value)
     return methods or DEFAULT_METHODS, allow_guest
+
 
 def extract_returns_from_docstring(docstring):
     if not docstring:
@@ -52,8 +53,9 @@ def extract_returns_from_docstring(docstring):
             return block
     return returns_block.strip()
 
+
 def parse_functions_from_file(file_path):
-    with open(file_path, "r", encoding="utf-8") as f:
+    with open(file_path, encoding="utf-8") as f:
         tree = ast.parse(f.read(), filename=file_path)
     return [
         {
@@ -62,12 +64,17 @@ def parse_functions_from_file(file_path):
             "doc": ast.get_docstring(node) or "",
             "methods": (methods := get_decorator_info(node.decorator_list))[0],
             "allow_guest": methods[1],
-            "returns_example": extract_returns_from_docstring(ast.get_docstring(node) or "")
+            "returns_example": extract_returns_from_docstring(ast.get_docstring(node) or ""),
         }
         for node in ast.walk(tree)
         if isinstance(node, ast.FunctionDef)
-        and "whitelist" in {getattr(getattr(deco, 'func', deco), 'attr', getattr(getattr(deco, 'func', deco), 'id', None)) for deco in node.decorator_list}
+        and "whitelist"
+        in {
+            getattr(getattr(deco, "func", deco), "attr", getattr(getattr(deco, "func", deco), "id", None))
+            for deco in node.decorator_list
+        }
     ]
+
 
 def generate_openapi_static(app_name):
     # Find the actual path of the app's main python package
@@ -80,9 +87,7 @@ def generate_openapi_static(app_name):
         "openapi": "3.0.0",
         "info": {"title": f"{app_name} API", "version": "1.0.0"},
         "paths": {},
-        "servers": [
-            {"url": frappe.utils.get_url()}
-        ]
+        "servers": [{"url": frappe.utils.get_url()}],
     }
     tags_set, needs_auth = set(), False
     for file_path in find_python_files(app_base_path):
@@ -106,21 +111,34 @@ def generate_openapi_static(app_name):
                                 "application/json": {
                                     "example": func["returns_example"] or {"status": "success", "data": {}}
                                 }
-                            }
+                            },
                         }
                     },
-                    "tags": [parent_module]
+                    "tags": [parent_module],
                 }
                 if not func["allow_guest"]:
-                    op["security"] = [{"CookieAuth": []}]
+                    op["security"] = [{"TokenAuth": [], "bearerAuth": []}]
                     needs_auth = True
                 openapi["paths"].setdefault(path, {})[method] = op
     if needs_auth:
         openapi.setdefault("components", {})["securitySchemes"] = {
-            "CookieAuth": {"type": "apiKey", "in": "cookie", "name": "sid"}
+            "TokenAuth": {
+                "type": "apiKey",
+                "in": "header",
+                "name": "Authorization",
+                "description": "Enter API key and secret in `token api_key:api_secret` format.",
+            },
+            "bearerAuth": {
+                "type": "http",
+                "in": "header",
+                "name": "Authorization",
+                "scheme": "bearer",
+                "description": "Enter access token.",
+            },
         }
     openapi["tags"] = [{"name": tag} for tag in sorted(tags_set)]
     return openapi
+
 
 def get_app_title_and_version(app_name):
     try:
@@ -135,14 +153,14 @@ def get_app_title_and_version(app_name):
         app_version = "1.0.0"
     return app_title, app_version
 
+
 def generate_openapi_for_all_apps():
     # Get the public folder path of the current site
-    public_folder = os.path.join(
-        frappe.get_site_path(), "public", "files", "openapi"
-    )
+    public_folder = os.path.join(frappe.get_site_path(), "public", "files", "openapi")
     os.makedirs(public_folder, exist_ok=True)
-
-    for app_name in frappe.get_installed_apps():
+    apps = frappe.get_installed_apps()
+    total = len(apps)
+    for i, app_name in enumerate(apps):
         app_title, app_version = get_app_title_and_version(app_name)
         openapi = generate_openapi_static(app_name)
         openapi["info"]["title"] = app_title
@@ -151,6 +169,6 @@ def generate_openapi_for_all_apps():
         try:
             with open(output_file, "w", encoding="utf-8") as f:
                 json.dump(openapi, f, indent=2)
-            print(f"OpenAPI spec for {app_name} generated")
+            update_progress_bar("generating OpenAPI spec", i, total)
         except Exception as e:
             frappe.log_error(f"Failed to write OpenAPI spec for {app_name}: {e}", "OpenAPI Generation Error")
