@@ -8,6 +8,7 @@ import os
 import re
 
 import frappe
+from frappe.utils import update_progress_bar
 
 DEFAULT_METHODS = ["get", "post", "put", "delete"]
 
@@ -157,8 +158,9 @@ def generate_openapi_for_all_apps():
     # Get the public folder path of the current site
     public_folder = os.path.join(frappe.get_site_path(), "public", "files", "openapi")
     os.makedirs(public_folder, exist_ok=True)
-
-    for app_name in frappe.get_installed_apps():
+    apps = frappe.get_installed_apps()
+    total = len(apps)
+    for i, app_name in enumerate(apps):
         app_title, app_version = get_app_title_and_version(app_name)
         openapi = generate_openapi_static(app_name)
         openapi["info"]["title"] = app_title
@@ -167,6 +169,6 @@ def generate_openapi_for_all_apps():
         try:
             with open(output_file, "w", encoding="utf-8") as f:
                 json.dump(openapi, f, indent=2)
-            print(f"OpenAPI spec for {app_name} generated")
+            update_progress_bar("generating OpenAPI spec", i, total)
         except Exception as e:
             frappe.log_error(f"Failed to write OpenAPI spec for {app_name}: {e}", "OpenAPI Generation Error")
