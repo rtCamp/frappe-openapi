@@ -136,6 +136,9 @@ def get_app_title_and_version(app_name):
     return app_title, app_version
 
 def generate_openapi_for_all_apps():
+    # Get Open API Settings to check which apps are enabled
+    openapi_settings = frappe.get_single("Open API Setting")
+    
     # Get the public folder path of the current site
     public_folder = os.path.join(
         frappe.get_site_path(), "public", "files", "openapi"
@@ -143,6 +146,20 @@ def generate_openapi_for_all_apps():
     os.makedirs(public_folder, exist_ok=True)
 
     for app_name in frappe.get_installed_apps():
+        # Check if the app is enabled in Open API Settings
+        app_enabled = getattr(openapi_settings, app_name, False)
+        
+        output_file = os.path.join(public_folder, f"openapi_{app_name}.json")
+        
+        if not app_enabled:
+            # Delete existing OpenAPI spec file if app is not enabled
+            if os.path.exists(output_file):
+                try:
+                    os.remove(output_file)
+                except Exception as e:
+                    frappe.log_error(f"Failed to delete OpenAPI spec for {app_name}: {e}", "OpenAPI Deletion Error")
+            continue  # Skip this app if not enabled
+            
         app_title, app_version = get_app_title_and_version(app_name)
         openapi = generate_openapi_static(app_name)
         openapi["info"]["title"] = app_title
