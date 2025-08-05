@@ -83,12 +83,12 @@ app_license = "agpl-3.0"
 # ------------
 
 # before_install = "frappe_open_api.install.before_install"
-# after_install = "frappe_open_api.install.after_install"
+after_install = "frappe_open_api.setup.install.after_install"
 
 # Uninstallation
 # ------------
 
-# before_uninstall = "frappe_open_api.uninstall.before_uninstall"
+before_uninstall = "frappe_open_api.setup.uninstall.before_uninstall"
 # after_uninstall = "frappe_open_api.uninstall.after_uninstall"
 
 # Integration Setup
@@ -243,3 +243,4 @@ app_license = "agpl-3.0"
 # }
 
 after_migrate = "frappe_open_api.frappe_open_api.generate_api_docs.generate_openapi_for_all_apps"
+before_migrate = "frappe_open_api.config.create_app_list.create_openapi_app_fields"
