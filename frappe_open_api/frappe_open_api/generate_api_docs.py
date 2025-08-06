@@ -156,14 +156,14 @@ def get_app_title_and_version(app_name):
 
 def generate_openapi_for_all_apps():
     # Get Open API Settings to check which apps are enabled
-    openapi_settings = frappe.get_single("Open API Setting")
-    
+    openapi_settings = frappe.get_single("Open API Settings")
+
     # Get the public folder path of the current site
     public_folder = os.path.join(frappe.get_site_path(), "public", "files", "openapi")
     os.makedirs(public_folder, exist_ok=True)
 
     apps = frappe.get_installed_apps()
-    
+
     # Filter enabled apps first to get accurate total
     enabled_apps = []
     for app_name in apps:
@@ -178,10 +178,10 @@ def generate_openapi_for_all_apps():
                     os.remove(output_file)
                 except Exception as e:
                     frappe.log_error(f"Failed to delete OpenAPI spec for {app_name}: {e}", "OpenAPI Deletion Error")
-    
+
     # Use enabled apps count for accurate progress calculation
     total = len(enabled_apps)
-    
+
     for i, app_name in enumerate(enabled_apps):
         app_title, app_version = get_app_title_and_version(app_name)
         openapi = generate_openapi_static(app_name)

@@ -5,5 +5,5 @@
 from frappe.model.document import Document
 
 
-class OpenAPISetting(Document):
-	pass
+class OpenAPISettings(Document):
+    pass

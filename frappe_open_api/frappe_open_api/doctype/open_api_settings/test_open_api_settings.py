@@ -5,5 +5,5 @@
 from frappe.tests.utils import FrappeTestCase
 
 
-class TestOpenAPISetting(FrappeTestCase):
-	pass
+class TestOpenAPISettings(FrappeTestCase):
+    pass
