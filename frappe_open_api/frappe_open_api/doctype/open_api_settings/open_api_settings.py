@@ -2,8 +2,12 @@
 # For license information, please see license.txt
 
 # import frappe
+from frappe import enqueue
 from frappe.model.document import Document
+
+from frappe_open_api.frappe_open_api.generate_api_docs import generate_openapi_for_all_apps
 
 
 class OpenAPISettings(Document):
-    pass
+    def on_update(self):
+        enqueue(generate_openapi_for_all_apps, queue="long", enqueue_after_commit=True)
