@@ -4,10 +4,10 @@ from frappe_openapi.frappe_openapi.generate_api_docs import get_app_title_and_ve
 
 
 def get_context(context):
-    # Get Open API Settings to check which apps are enabled
-    openapi_settings = frappe.get_single("Open API Settings")
+    # Get OpenAPI Settings to check which apps are enabled
+    openapi_settings = frappe.get_single("OpenAPI Settings")
 
-    # Filter apps based on Open API Settings
+    # Filter apps based on OpenAPI Settings
     enabled_apps = []
     context.app_titles = {}
 
