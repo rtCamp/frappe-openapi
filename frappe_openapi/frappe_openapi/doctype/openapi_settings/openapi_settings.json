@@ -6,14 +6,14 @@
  "engine": "InnoDB",
  "field_order": [
   "generate_openapi_specification_for_selected_apps_section",
-  "frappe_open_api"
+  "frappe_openapi"
  ],
  "fields": [
   {
    "default": "1",
-   "fieldname": "frappe_open_api",
+   "fieldname": "frappe_openapi",
    "fieldtype": "Check",
-   "label": "Frappe Open API "
+   "label": "Frappe OpenAPI "
   },
   {
    "fieldname": "generate_openapi_specification_for_selected_apps_section",
@@ -26,8 +26,8 @@
  "links": [],
  "modified": "2025-08-05 23:30:04.236496",
  "modified_by": "Administrator",
- "module": "Frappe Open API",
- "name": "Open API Settings",
+ "module": "Frappe OpenAPI",
+ "name": "OpenAPI Settings",
  "owner": "Administrator",
  "permissions": [
   {
