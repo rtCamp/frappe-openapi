@@ -12,7 +12,7 @@ def get_context(context):
     context.app_titles = {}
 
     for app in frappe.get_installed_apps():
-        # Check if the app is enabled in Open API Settings
+        # Check if the app is enabled in OpenAPI Settings
         app_enabled = getattr(openapi_settings, app, False) if openapi_settings else True
 
         if app_enabled:

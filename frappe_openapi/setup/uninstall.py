@@ -3,13 +3,11 @@ import frappe
 
 def before_uninstall():
     """
-    Remove all custom fields related to Open API Settings doctype before uninstalling the app
+    Remove all custom fields related to OpenAPI Settings doctype before uninstalling the app
     """
     try:
-        # Get all custom fields for Open API Settings doctype
-        custom_fields = frappe.get_all(
-            "Custom Field", filters={"dt": "Open API Settings"}, fields=["name", "fieldname"]
-        )
+        # Get all custom fields for OpenAPI Settings doctype
+        custom_fields = frappe.get_all("Custom Field", filters={"dt": "OpenAPI Settings"}, fields=["name", "fieldname"])
 
         # Delete all custom fields
         for field in custom_fields:

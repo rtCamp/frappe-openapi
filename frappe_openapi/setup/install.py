@@ -5,7 +5,7 @@ from frappe_openapi.config.create_app_list import create_openapi_app_fields
 
 def after_install():
     """
-    Create custom fields for Open API Settings doctype for all installed apps
+    Create custom fields for OpenAPI Settings doctype for all installed apps
     excluding frappe_openapi.
     """
     try:

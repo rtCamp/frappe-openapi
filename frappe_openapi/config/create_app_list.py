@@ -5,7 +5,7 @@ from frappe_openapi.frappe_openapi.generate_api_docs import get_app_title_and_ve
 
 def create_openapi_app_fields():
     """
-    Create custom fields for Open API Settings doctype for all installed apps
+    Create custom fields for OpenAPI Settings doctype for all installed apps
     excluding frappe_openapi. Also remove fields for uninstalled apps.
     """
     try:
@@ -15,9 +15,9 @@ def create_openapi_app_fields():
         # Exclude frappe_openapi from the list
         apps_to_process = [app for app in installed_apps if app != "frappe_openapi"]
 
-        # Get existing custom fields for Open API Settings
+        # Get existing custom fields for OpenAPI Settings
         existing_fields = frappe.get_all(
-            "Custom Field", filters={"dt": "Open API Settings"}, fields=["name", "fieldname"]
+            "Custom Field", filters={"dt": "OpenAPI Settings"}, fields=["name", "fieldname"]
         )
 
         existing_fieldnames = [field.fieldname for field in existing_fields]
@@ -32,7 +32,7 @@ def create_openapi_app_fields():
                 custom_field = frappe.get_doc(
                     {
                         "doctype": "Custom Field",
-                        "dt": "Open API Settings",
+                        "dt": "OpenAPI Settings",
                         "fieldname": fieldname,
                         "fieldtype": "Check",
                         "label": app_title,
