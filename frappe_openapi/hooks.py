@@ -1,5 +1,5 @@
-app_name = "frappe_open_api"
-app_title = "Frappe Open API"
+app_name = "frappe_openapi"
+app_title = "Frappe OpenAPI"
 app_publisher = "rtCamp"
 app_description = "Frappe app to generate and visualize whitelisted APIs"
 app_email = "frappe@rtcamp.com"
@@ -13,11 +13,11 @@ app_license = "agpl-3.0"
 # Each item in the list will be shown as an app in the apps page
 # add_to_apps_screen = [
 # 	{
-# 		"name": "frappe_open_api",
-# 		"logo": "/assets/frappe_open_api/logo.png",
+# 		"name": "frappe_openapi",
+# 		"logo": "/assets/frappe_openapi/logo.png",
 # 		"title": "API Explorer",
-# 		"route": "/frappe_open_api",
-# 		"has_permission": "frappe_open_api.api.permission.has_app_permission"
+# 		"route": "/frappe_openapi",
+# 		"has_permission": "frappe_openapi.api.permission.has_app_permission"
 # 	}
 # ]
 
@@ -25,15 +25,15 @@ app_license = "agpl-3.0"
 # ------------------
 
 # include js, css files in header of desk.html
-# app_include_css = "/assets/frappe_open_api/css/frappe_open_api.css"
-# app_include_js = "/assets/frappe_open_api/js/frappe_open_api.js"
+# app_include_css = "/assets/frappe_openapi/css/frappe_openapi.css"
+# app_include_js = "/assets/frappe_openapi/js/frappe_openapi.js"
 
 # include js, css files in header of web template
-# web_include_css = "/assets/frappe_open_api/css/frappe_open_api.css"
-# web_include_js = "/assets/frappe_open_api/js/frappe_open_api.js"
+# web_include_css = "/assets/frappe_openapi/css/frappe_openapi.css"
+# web_include_js = "/assets/frappe_openapi/js/frappe_openapi.js"
 
 # include custom scss in every website theme (without file extension ".scss")
-# website_theme_scss = "frappe_open_api/public/scss/website"
+# website_theme_scss = "frappe_openapi/public/scss/website"
 
 # include js, css files in header of web form
 # webform_include_js = {"doctype": "public/js/doctype.js"}
@@ -51,7 +51,7 @@ app_license = "agpl-3.0"
 # Svg Icons
 # ------------------
 # include app icons in desk
-# app_include_icons = "frappe_open_api/public/icons.svg"
+# app_include_icons = "frappe_openapi/public/icons.svg"
 
 # Home Pages
 # ----------
@@ -75,43 +75,43 @@ app_license = "agpl-3.0"
 
 # add methods and filters to jinja environment
 # jinja = {
-# 	"methods": "frappe_open_api.utils.jinja_methods",
-# 	"filters": "frappe_open_api.utils.jinja_filters"
+# 	"methods": "frappe_openapi.utils.jinja_methods",
+# 	"filters": "frappe_openapi.utils.jinja_filters"
 # }
 
 # Installation
 # ------------
 
-# before_install = "frappe_open_api.install.before_install"
-after_install = "frappe_open_api.setup.install.after_install"
+# before_install = "frappe_openapi.install.before_install"
+after_install = "frappe_openapi.setup.install.after_install"
 
 # Uninstallation
 # ------------
 
-before_uninstall = "frappe_open_api.setup.uninstall.before_uninstall"
-# after_uninstall = "frappe_open_api.uninstall.after_uninstall"
+before_uninstall = "frappe_openapi.setup.uninstall.before_uninstall"
+# after_uninstall = "frappe_openapi.uninstall.after_uninstall"
 
 # Integration Setup
 # ------------------
 # To set up dependencies/integrations with other apps
 # Name of the app being installed is passed as an argument
 
-# before_app_install = "frappe_open_api.utils.before_app_install"
-# after_app_install = "frappe_open_api.utils.after_app_install"
+# before_app_install = "frappe_openapi.utils.before_app_install"
+# after_app_install = "frappe_openapi.utils.after_app_install"
 
 # Integration Cleanup
 # -------------------
 # To clean up dependencies/integrations with other apps
 # Name of the app being uninstalled is passed as an argument
 
-# before_app_uninstall = "frappe_open_api.utils.before_app_uninstall"
-# after_app_uninstall = "frappe_open_api.utils.after_app_uninstall"
+# before_app_uninstall = "frappe_openapi.utils.before_app_uninstall"
+# after_app_uninstall = "frappe_openapi.utils.after_app_uninstall"
 
 # Desk Notifications
 # ------------------
 # See frappe.core.notifications.get_notification_config
 
-# notification_config = "frappe_open_api.notifications.get_notification_config"
+# notification_config = "frappe_openapi.notifications.get_notification_config"
 
 # Permissions
 # -----------
@@ -150,39 +150,39 @@ before_uninstall = "frappe_open_api.setup.uninstall.before_uninstall"
 
 # scheduler_events = {
 # 	"all": [
-# 		"frappe_open_api.tasks.all"
+# 		"frappe_openapi.tasks.all"
 # 	],
 # 	"daily": [
-# 		"frappe_open_api.tasks.daily"
+# 		"frappe_openapi.tasks.daily"
 # 	],
 # 	"hourly": [
-# 		"frappe_open_api.tasks.hourly"
+# 		"frappe_openapi.tasks.hourly"
 # 	],
 # 	"weekly": [
-# 		"frappe_open_api.tasks.weekly"
+# 		"frappe_openapi.tasks.weekly"
 # 	],
 # 	"monthly": [
-# 		"frappe_open_api.tasks.monthly"
+# 		"frappe_openapi.tasks.monthly"
 # 	],
 # }
 
 # Testing
 # -------
 
-# before_tests = "frappe_open_api.install.before_tests"
+# before_tests = "frappe_openapi.install.before_tests"
 
 # Overriding Methods
 # ------------------------------
 #
 # override_whitelisted_methods = {
-# 	"frappe.desk.doctype.event.event.get_events": "frappe_open_api.event.get_events"
+# 	"frappe.desk.doctype.event.event.get_events": "frappe_openapi.event.get_events"
 # }
 #
 # each overriding function accepts a `data` argument;
 # generated from the base implementation of the doctype dashboard,
 # along with any modifications made in other Frappe apps
 # override_doctype_dashboards = {
-# 	"Task": "frappe_open_api.task.get_dashboard_data"
+# 	"Task": "frappe_openapi.task.get_dashboard_data"
 # }
 
 # exempt linked doctypes from being automatically cancelled
@@ -196,13 +196,13 @@ before_uninstall = "frappe_open_api.setup.uninstall.before_uninstall"
 
 # Request Events
 # ----------------
-# before_request = ["frappe_open_api.utils.before_request"]
-# after_request = ["frappe_open_api.utils.after_request"]
+# before_request = ["frappe_openapi.utils.before_request"]
+# after_request = ["frappe_openapi.utils.after_request"]
 
 # Job Events
 # ----------
-# before_job = ["frappe_open_api.utils.before_job"]
-# after_job = ["frappe_open_api.utils.after_job"]
+# before_job = ["frappe_openapi.utils.before_job"]
+# after_job = ["frappe_openapi.utils.after_job"]
 
 # User Data Protection
 # --------------------
@@ -232,7 +232,7 @@ before_uninstall = "frappe_open_api.setup.uninstall.before_uninstall"
 # --------------------------------
 
 # auth_hooks = [
-# 	"frappe_open_api.auth.validate"
+# 	"frappe_openapi.auth.validate"
 # ]
 
 # Automatically update python controller files with type annotations for this app.
@@ -242,5 +242,5 @@ before_uninstall = "frappe_open_api.setup.uninstall.before_uninstall"
 # 	"Logging DocType Name": 30  # days to retain logs
 # }
 
-after_migrate = "frappe_open_api.frappe_open_api.generate_api_docs.generate_openapi_for_all_apps"
-before_migrate = "frappe_open_api.config.create_app_list.create_openapi_app_fields"
+after_migrate = "frappe_openapi.frappe_openapi.generate_api_docs.generate_openapi_for_all_apps"
+before_migrate = "frappe_openapi.config.create_app_list.create_openapi_app_fields"
