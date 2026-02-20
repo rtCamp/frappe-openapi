@@ -155,8 +155,8 @@ def get_app_title_and_version(app_name):
 
 
 def generate_openapi_for_all_apps():
-    # Get Open API Settings to check which apps are enabled
-    openapi_settings = frappe.get_single("Open API Settings")
+    # Get OpenAPI Settings to check which apps are enabled
+    openapi_settings = frappe.get_single("OpenAPI Settings")
 
     # Get the public folder path of the current site
     public_folder = os.path.join(frappe.get_site_path(), "public", "files", "openapi")

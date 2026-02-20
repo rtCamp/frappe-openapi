@@ -7,7 +7,7 @@ repos:
     rev: v4.3.0
     hooks:
       - id: trailing-whitespace
-        files: "frappe_open_api.*"
+        files: "frappe_openapi.*"
         exclude: ".*json$|.*txt$|.*csv|.*md|.*svg"
       - id: check-yaml
       - id: check-merge-conflict
@@ -52,11 +52,11 @@ repos:
         # Ignore any files that might contain jinja / bundles
         exclude: |
             (?x)^(
-                frappe_open_api/public/dist/.*|
+                frappe_openapi/public/dist/.*|
                 .*node_modules.*|
                 .*boilerplate.*|
-                frappe_open_api/templates/includes/.*|
-                frappe_open_api/public/js/lib/.*
+                frappe_openapi/templates/includes/.*|
+                frappe_openapi/public/js/lib/.*
             )$
 
 
@@ -69,12 +69,12 @@ repos:
         # Ignore any files that might contain jinja / bundles
         exclude: |
             (?x)^(
-                frappe_open_api/public/dist/.*|
+                frappe_openapi/public/dist/.*|
                 cypress/.*|
                 .*node_modules.*|
                 .*boilerplate.*|
-                frappe_open_api/templates/includes/.*|
-                frappe_open_api/public/js/lib/.*
+                frappe_openapi/templates/includes/.*|
+                frappe_openapi/public/js/lib/.*
             )$
 
 ci:

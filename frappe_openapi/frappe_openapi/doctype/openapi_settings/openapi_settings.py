@@ -5,7 +5,7 @@
 from frappe import enqueue
 from frappe.model.document import Document
 
-from frappe_open_api.frappe_open_api.generate_api_docs import generate_openapi_for_all_apps
+from frappe_openapi.frappe_openapi.generate_api_docs import generate_openapi_for_all_apps
 
 
 class OpenAPISettings(Document):
