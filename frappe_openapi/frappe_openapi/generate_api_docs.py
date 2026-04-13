@@ -29,9 +29,13 @@ def get_decorator_info(decorator_list):
                     if kw.arg == "methods":
                         val = kw.value
                         if isinstance(val, ast.List):
-                            methods = [elt.s.lower() for elt in val.elts if isinstance(elt, ast.Str)]
-                        elif isinstance(val, ast.Str):
-                            methods = [val.s.lower()]
+                            methods = [
+                                elt.value.lower()
+                                for elt in val.elts
+                                if isinstance(elt, ast.Constant) and isinstance(elt.value, str)
+                            ]
+                        elif isinstance(val, ast.Constant) and isinstance(val.value, str):
+                            methods = [val.value.lower()]
                     elif kw.arg == "allow_guest" and isinstance(kw.value, ast.Constant):
                         allow_guest = bool(kw.value.value)
     return methods or DEFAULT_METHODS, allow_guest
