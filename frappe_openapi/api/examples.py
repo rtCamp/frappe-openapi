@@ -26,6 +26,23 @@ from typing import Any
 import frappe
 
 
+def _check_demo_enabled():
+    """Check if demo endpoints should be enabled.
+    
+    Demo endpoints are only enabled in:
+    1. Developer mode
+    2. When frappe_openapi_enable_demos site config is True
+    """
+    if frappe.conf.developer_mode:
+        return True
+    
+    if frappe.conf.get("frappe_openapi_enable_demos"):
+        return True
+        
+    frappe.throw("Demo endpoints are disabled in production. Enable developer mode or set frappe_openapi_enable_demos=1 in site_config.json", 
+                 frappe.PermissionError)
+
+
 # ---------------------------------------------------------------------------
 # 1. Health check – minimal, guest, GET
 # ---------------------------------------------------------------------------
@@ -42,6 +59,7 @@ def demo_health_check() -> dict[str, Any]:
             "version": "1.0.0"
         }
     """
+    _check_demo_enabled()
     return {
         "status": "ok",
         "timestamp": frappe.utils.now(),
@@ -93,6 +111,7 @@ def demo_list_items(
             ]
         }
     """
+    _check_demo_enabled()
     # Demo implementation — not executed in production
     return {"total": 0, "page": page, "page_size": page_size, "items": []}
 
@@ -139,6 +158,7 @@ def demo_create_item(
             "created_at": "2026-01-01T00:00:00Z"
         }
     """
+    _check_demo_enabled()
     frappe.only_for("System Manager")
     return {"success": True, "name": "ITEM-NEW"}
 
@@ -175,6 +195,7 @@ def demo_update_item(
             "updated_fields": ["title", "price"]
         }
     """
+    _check_demo_enabled()
     frappe.only_for("System Manager")
     return {"success": True, "name": item_name, "updated_fields": []}
 
@@ -204,6 +225,7 @@ def demo_delete_item(
             "permanent": false
         }
     """
+    _check_demo_enabled()
     frappe.only_for("System Manager")
     return {"success": True, "deleted": True, "permanent": permanent}
 
@@ -250,6 +272,7 @@ def demo_upload_file(
             "content_type": "image/webp"
         }
     """
+    _check_demo_enabled()
     return {"success": True, "file_url": file_url}
 
 
@@ -284,6 +307,7 @@ def demo_authenticated(
             "metadata": {}
         }
     """
+    _check_demo_enabled()
     return {
         "success": True,
         "resource_id": resource_id,

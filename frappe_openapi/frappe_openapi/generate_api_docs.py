@@ -124,8 +124,16 @@ def get_openapi_type(annotation):
                     and not (isinstance(n, ast.Name) and n.id == "None")
                 ]
                 has_none = len(non_none) < len(slice_node.elts)
-                if non_none:
+                if len(non_none) == 1:
+                    # Simple Union[X, None] -> X with nullable
                     schema = get_openapi_type(non_none[0])
+                    if has_none:
+                        schema["nullable"] = True
+                    return schema
+                elif len(non_none) > 1:
+                    # Complex union -> oneOf with multiple schemas
+                    one_of = [get_openapi_type(n) for n in non_none]
+                    schema = {"oneOf": one_of}
                     if has_none:
                         schema["nullable"] = True
                     return schema
@@ -135,14 +143,41 @@ def get_openapi_type(annotation):
 
     # Python 3.10+ union syntax: X | Y | None
     if isinstance(annotation, ast.BinOp) and isinstance(annotation.op, ast.BitOr):
-        right = annotation.right
-        right_is_none = (isinstance(right, ast.Constant) and right.value is None) or (
-            isinstance(right, ast.Name) and right.id == "None"
-        )
-        schema = get_openapi_type(annotation.left)
-        if right_is_none:
-            schema["nullable"] = True
-        return schema
+        # Collect all union members by walking the BitOr chain
+        union_members = []
+        
+        def collect_union_members(node):
+            if isinstance(node, ast.BinOp) and isinstance(node.op, ast.BitOr):
+                collect_union_members(node.left)
+                collect_union_members(node.right)
+            else:
+                union_members.append(node)
+        
+        collect_union_members(annotation)
+        
+        # Separate None from other types
+        non_none = [
+            n for n in union_members
+            if not (isinstance(n, ast.Constant) and n.value is None)
+            and not (isinstance(n, ast.Name) and n.id == "None")
+        ]
+        has_none = len(non_none) < len(union_members)
+        
+        if len(non_none) == 1:
+            # Simple X | None -> X with nullable
+            schema = get_openapi_type(non_none[0])
+            if has_none:
+                schema["nullable"] = True
+            return schema
+        elif len(non_none) > 1:
+            # Complex union -> oneOf
+            one_of = [get_openapi_type(n) for n in non_none]
+            schema = {"oneOf": one_of}
+            if has_none:
+                schema["nullable"] = True
+            return schema
+        
+        return {"type": "string"}
 
     if isinstance(annotation, ast.Attribute):
         return get_openapi_type(ast.Name(id=annotation.attr, ctx=ast.Load()))
@@ -280,9 +315,10 @@ def parse_functions_from_file(file_path):
             else:
                 type_schema = {"type": "string"}
 
-            # Docstring can refine required status only when no default is available from signature
-            if arg.annotation is None and "required" in doc_info and i >= n_required:
-                is_required = doc_info["required"]
+            # Only use docstring required info when signature doesn't provide defaults
+            if "required" in doc_info and i >= n_required and arg.annotation is None:
+                # Only override if signature doesn't already make it optional
+                pass  # Keep signature-derived status as authoritative
 
             params.append(
                 {
@@ -333,7 +369,7 @@ def generate_openapi_static(app_name):
                 response_schema = build_response_schema(func["return_annotation"], func["returns_example"])
                 response_content: dict = {"schema": response_schema}
                 if func["returns_example"] is not None:
-                    response_content["example"] = func["returns_example"]
+                    response_content["example"] = {"message": func["returns_example"]}
 
                 # For non-GET methods, send params as form-encoded request body
                 if method in ("post", "put", "patch", "delete"):
@@ -350,12 +386,18 @@ def generate_openapi_static(app_name):
                     rb_schema: dict = {"type": "object", "properties": rb_properties}
                     if rb_required:
                         rb_schema["required"] = rb_required
-                    request_body: dict | None = {
-                        "required": True,
-                        "content": {
-                            "application/x-www-form-urlencoded": {"schema": rb_schema}
-                        },
-                    }
+                    
+                    # Only mark requestBody as required if there are required fields
+                    has_required_params = bool(rb_required)
+                    if rb_properties:  # Only add requestBody if there are parameters
+                        request_body: dict | None = {
+                            "required": has_required_params,
+                            "content": {
+                                "application/x-www-form-urlencoded": {"schema": rb_schema}
+                            },
+                        }
+                    else:
+                        request_body = None
                 else:
                     # GET — use query parameters
                     param_objects = []
@@ -391,7 +433,7 @@ def generate_openapi_static(app_name):
                 if request_body is not None:
                     op["requestBody"] = request_body
                 if not func["allow_guest"]:
-                    op["security"] = [{"TokenAuth": [], "bearerAuth": []}]
+                    op["security"] = [{"TokenAuth": []}, {"bearerAuth": []}]
                     needs_auth = True
                 openapi["paths"].setdefault(path, {})[method] = op
     if needs_auth:
