@@ -697,7 +697,7 @@
     }
 </style>
 
-<!-- ═══ Header ══════════════════════════════════════════════════════ -->
+<!-- Header -->
 <div id="api-header">
     <div class="header-top">
         <div class="brand">
@@ -727,7 +727,6 @@
     </div>
 
     <div class="search-toolbar">
-        <!-- Search input -->
         <div class="search-wrap">
             <svg class="ico-search" xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor"
                 viewBox="0 0 16 16">
@@ -743,7 +742,6 @@
                 </svg>
             </button>
         </div>
-        <!-- Method filter pills -->
         <div id="method-filters">
             <button class="method-btn" data-method="get">GET</button>
             <button class="method-btn" data-method="post">POST</button>
@@ -751,12 +749,10 @@
             <button class="method-btn" data-method="patch">PATCH</button>
             <button class="method-btn" data-method="delete">DELETE</button>
         </div>
-        <!-- Stats -->
         <span id="search-results-info"></span>
     </div>
 </div>
 
-<!-- ═══ Content ═════════════════════════════════════════════════════ -->
 <div id="api-content">
     <div id="swagger-ui-wrap">
         <div id="swagger-ui"></div>
@@ -783,7 +779,6 @@
     let searchDebounce = null;
     let countObserver = null;
 
-    // ── localStorage persistence ────────────────────────────────────────
     function getSavedApp() {
         try {
             const saved = localStorage.getItem(LS_KEY);
@@ -794,7 +789,6 @@
         try { localStorage.setItem(LS_KEY, name); } catch (e) { }
     }
 
-    // ── Helpers ─────────────────────────────────────────────────────────
     function countOps(spec) {
         let n = 0;
         for (const item of Object.values(spec.paths || {}))
@@ -814,7 +808,7 @@
         return counts;
     }
 
-    // ── Inject count badges via MutationObserver ─────────────────────────
+    // Inject count badges into tag section headers via MutationObserver
     function startCountInjector(tagCounts) {
         if (countObserver) countObserver.disconnect();
 
@@ -840,7 +834,6 @@
         inject();
     }
 
-    // ── Render Swagger UI ────────────────────────────────────────────────
     function renderSwagger(spec, isFiltered) {
         document.getElementById('swagger-ui').innerHTML = '';
         const tagCounts = buildTagCounts(spec);
@@ -855,19 +848,16 @@
             plugins: [SwaggerUIBundle.plugins.DownloadUrl],
             layout: 'BaseLayout',
             requestInterceptor: req => { req.headers['X-Frappe-CSRF-Token'] = null; return req; },
-            // Expand all matching sections when a filter is active
             docExpansion: isFiltered ? 'list' : 'none',
             persistAuthorization: true,
         });
         startCountInjector(tagCounts);
     }
 
-    // ── Search scoring ───────────────────────────────────────────────────
-    // Returns a numeric score: higher = more relevant. 0 = no match.
-    // Priority: path/function-name  >  summary  >  tag  >  param name  >  description
+    // Score an operation against a query string. Higher = more relevant, 0 = no match.
+    // Priority: path/function-name > summary > tag > param name > description
     function scoreOp(q, path, op) {
         const pathLc = path.toLowerCase();
-        // The function name is the last URL segment (e.g. "add_manual_payment")
         const fnName = pathLc.split('/').pop() || '';
         const summary = (op.summary || '').toLowerCase();
         const desc = (op.description || '').toLowerCase();
@@ -877,30 +867,24 @@
 
         let score = 0;
 
-        // ① Path / function name — highest priority
         if (fnName === q) score += 100;
         else if (fnName.startsWith(q)) score += 88;
         else if (fnName.includes(q)) score += 72;
         else if (pathLc.includes(q)) score += 60;
 
-        // ② Summary
         if (summary.startsWith(q)) score += 55;
         else if (summary.includes(q)) score += 42;
 
-        // ③ Tags
         if (tags.some(t => t === q)) score += 48;
         else if (tags.some(t => t.includes(q))) score += 35;
 
-        // ④ Parameter names
         if (paramText.includes(q)) score += 28;
 
-        // ⑤ Description — lowest
         if (desc.includes(q)) score += 15;
 
         return score;
     }
 
-    // ── Build filtered + ranked spec ─────────────────────────────────────
     function buildFilteredSpec(query, methods) {
         if (!fullSpec) return null;
 
@@ -913,7 +897,6 @@
         const matchedTags = new Set();
         let matchCount = 0;
 
-        // Collect [path, maxScore, filteredPathItem]
         const scoredEntries = [];
 
         for (const [path, pathItem] of Object.entries(fullSpec.paths || {})) {
@@ -923,13 +906,11 @@
             for (const [method, op] of Object.entries(pathItem)) {
                 if (!HTTP_METHODS.includes(method)) continue;
 
-                // Method filter
                 if (filterMethods && !methods.has(method)) continue;
 
-                // Text filter + scoring
                 if (filterQuery) {
                     const s = scoreOp(q, path, op);
-                    if (s === 0) continue;          // no match
+                    if (s === 0) continue;
                     maxScore = Math.max(maxScore, s);
                 }
 
@@ -946,7 +927,6 @@
             }
         }
 
-        // Sort by score descending only when a text query is active
         if (filterQuery) {
             scoredEntries.sort((a, b) => b[1] - a[1]);
         }
@@ -955,7 +935,6 @@
             scoredEntries.map(([p, , item]) => [p, item])
         );
 
-        // Stats badge
         const info = document.getElementById('search-results-info');
         if (isFiltered) {
             info.textContent = `${matchCount} of ${totalOps} matched`;
@@ -965,7 +944,7 @@
             info.classList.remove('is-filtered');
         }
 
-        // Strip empty tag sections when filtering
+        // When filtering, hide tag sections that have no matched operations
         const filteredTags = isFiltered
             ? (fullSpec.tags || []).filter(t => matchedTags.has(t.name))
             : (fullSpec.tags || []);
@@ -973,17 +952,14 @@
         return { ...fullSpec, paths: filteredPaths, tags: filteredTags };
     }
 
-    // ── Apply current filters and re-render ──────────────────────────────
     function applyFilters() {
         const q = document.getElementById('api-search').value;
         const isFiltered = q.trim().length > 0 || activeMethods.size > 0;
         const filtered = buildFilteredSpec(q, activeMethods);
         if (filtered) renderSwagger(filtered, isFiltered);
-        // Show/hide ✕ clear button
         document.getElementById('clear-search').style.display = q.length ? 'block' : 'none';
     }
 
-    // ── Load spec for an app ─────────────────────────────────────────────
     function loadSwagger(appName) {
         saveApp(appName);
         document.title = `${appTitles[appName] || appName} | API Docs`;
@@ -1001,7 +977,7 @@
             });
     }
 
-    // ── Events ────────────────────────────────────────────────────────────
+    // Events
     document.getElementById('api-search').addEventListener('input', function () {
         clearTimeout(searchDebounce);
         searchDebounce = setTimeout(applyFilters, 200);
@@ -1035,7 +1011,6 @@
         loadSwagger(this.value);
     });
 
-    // ── Initial load ──────────────────────────────────────────────────────
     const initialApp = getSavedApp();
     document.getElementById('app-select').value = initialApp;
     if (apps.length) loadSwagger(initialApp);
