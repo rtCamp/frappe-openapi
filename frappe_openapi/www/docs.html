@@ -16,13 +16,11 @@
     crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
 <style>
-    /* ── Design tokens ───────────────────────────────────────────────── */
     :root {
         --accent: #ab3a6c;
         --accent-rgb: 171, 58, 108;
     }
 
-    /* ── Reset ───────────────────────────────────────────────────────── */
     *,
     *::before,
     *::after {
@@ -44,7 +42,6 @@
         margin-bottom: 0;
     }
 
-    /* ── Header — light ──────────────────────────────────────────────── */
     #api-header {
         background: #ffffff;
         border-bottom: 1px solid #e2e8f0;
@@ -130,7 +127,6 @@
         color: #1e293b;
     }
 
-    /* ── Search toolbar ──────────────────────────────────────────────── */
     .search-toolbar {
         display: flex;
         align-items: center;
@@ -206,7 +202,6 @@
         color: #475569;
     }
 
-    /* Method pills — scroll horizontally instead of overflowing */
     #method-filters {
         display: flex;
         align-items: center;
@@ -243,34 +238,35 @@
         background: #f1f5f9;
     }
 
+    
     .method-btn.active-get {
-        background: #dcfce7;
-        color: #166534;
-        border-color: #16a34a;
+        background: rgba(97, 175, 254, 0.12);
+        color: #2478c5;
+        border-color: #61affe;
     }
 
     .method-btn.active-post {
-        background: #ffedd5;
-        color: #9a3412;
-        border-color: #ea580c;
+        background: rgba(73, 204, 144, 0.12);
+        color: #1a8a5a;
+        border-color: #49cc90;
     }
 
     .method-btn.active-put {
-        background: #dbeafe;
-        color: #1e40af;
-        border-color: #3b82f6;
+        background: rgba(252, 161, 48, 0.12);
+        color: #b06a00;
+        border-color: #fca130;
     }
 
     .method-btn.active-patch {
-        background: #cffafe;
-        color: #155e75;
-        border-color: #06b6d4;
+        background: rgba(80, 227, 194, 0.12);
+        color: #1a8a7a;
+        border-color: #50e3c2;
     }
 
     .method-btn.active-delete {
-        background: #fee2e2;
-        color: #991b1b;
-        border-color: #ef4444;
+        background: rgba(249, 62, 62, 0.12);
+        color: #c41a1a;
+        border-color: #f93e3e;
     }
 
     /* Stats pill */
@@ -292,7 +288,6 @@
         border-color: #f0aac9;
     }
 
-    /* ── Content area ────────────────────────────────────────────────── */
     #api-content {
         max-width: 1280px;
         margin: 24px auto 40px;
@@ -321,7 +316,6 @@
         color: #ef4444;
     }
 
-    /* ── Swagger UI overrides ────────────────────────────────────────── */
     .swagger-ui {
         font-family: 'Inter', -apple-system, sans-serif !important;
     }
@@ -330,7 +324,7 @@
         display: none !important;
     }
 
-    /* Info block */
+
     .swagger-ui .info {
         margin: 24px 24px 10px !important;
     }
@@ -351,7 +345,6 @@
         color: var(--accent) !important;
     }
 
-    /* Scheme / auth bar */
     .swagger-ui .scheme-container {
         background: #f8fafc !important;
         box-shadow: none !important;
@@ -361,7 +354,7 @@
         margin: 0 !important;
     }
 
-    /* Tag (module) section header */
+
     .swagger-ui .opblock-tag-section {
         margin-bottom: 8px !important;
         border: 1px solid #e2e8f0 !important;
@@ -423,7 +416,6 @@
         flex-shrink: 0;
     }
 
-    /* Operation blocks — nested under tag card */
     .swagger-ui .opblock {
         margin: 0 !important;
         border-radius: 0 !important;
@@ -479,7 +471,7 @@
         letter-spacing: 0.5px !important;
     }
 
-    /* Responses */
+
     .swagger-ui table.responses-table {
         border: none !important;
     }
@@ -492,7 +484,6 @@
         color: #475569 !important;
     }
 
-    /* Execute / Clear buttons */
     .swagger-ui .btn.execute {
         background: var(--accent) !important;
         border-color: var(--accent) !important;
@@ -530,7 +521,7 @@
         color: #1e293b !important;
     }
 
-    /* Auth lock */
+
     .swagger-ui .authorization__btn svg {
         fill: var(--accent) !important;
     }
@@ -545,7 +536,14 @@
         color: #fff !important;
     }
 
-    /* Remove black focus outline on operation blocks */
+    .swagger-ui .opblock-summary-control svg,
+    .swagger-ui .expand-operation svg,
+    .swagger-ui .opblock-tag svg,
+    .swagger-ui .arrow {
+        width: 14px !important;
+        height: 14px !important;
+    }
+
     .swagger-ui .opblock-summary:focus,
     .swagger-ui .opblock-summary:focus-visible,
     .swagger-ui .opblock-summary-control:focus,
@@ -560,24 +558,19 @@
         box-shadow: none !important;
     }
 
-    /* ── Responsive ──────────────────────────────────────────────────── */
 
-    /* Tablet: ≤ 900px — relax max-widths a little */
     @media (max-width: 900px) {
         .search-wrap {
             max-width: 340px;
         }
     }
 
-    /* Mobile: ≤ 640px — full layout rethink */
     @media (max-width: 640px) {
 
-        /* Header padding */
         #api-header {
             padding: 12px 14px 0;
         }
 
-        /* Brand + app-select stack vertically, each full width */
         .header-top {
             flex-direction: column;
             align-items: stretch;
@@ -596,7 +589,6 @@
             padding: 9px 32px 9px 12px;
         }
 
-        /* Search toolbar: search on its own row, pills + stats on the row below */
         .search-toolbar {
             flex-direction: column;
             align-items: stretch;
@@ -615,7 +607,6 @@
             padding: 10px 34px 10px 36px;
         }
 
-        /* Pills row: horizontally scrollable, no wrapping, bigger touch targets */
         #method-filters {
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
@@ -623,7 +614,6 @@
             flex-wrap: nowrap;
             gap: 6px;
             padding-bottom: 2px;
-            /* room for scroll bar on some browsers */
         }
 
         #method-filters::-webkit-scrollbar {
@@ -637,12 +627,10 @@
             touch-action: manipulation;
         }
 
-        /* Stats pill same row as pills (toolbar is column, so separate row) */
         #search-results-info {
             align-self: flex-start;
         }
 
-        /* Content */
         #api-content {
             margin: 12px 0 24px;
             padding: 0 10px;
@@ -652,7 +640,6 @@
             border-radius: 8px;
         }
 
-        /* Swagger UI — path wrapping */
         .swagger-ui .opblock-summary {
             padding: 10px 12px !important;
             flex-wrap: wrap !important;
@@ -678,13 +665,11 @@
             padding-left: 0 !important;
         }
 
-        /* Tag header on mobile */
         .swagger-ui .opblock-tag {
             padding: 11px 14px !important;
             font-size: 0.8rem !important;
         }
 
-        /* Info block */
         .swagger-ui .info {
             margin: 16px 14px 8px !important;
         }
@@ -693,12 +678,10 @@
             font-size: 1.1rem !important;
         }
 
-        /* Scheme container */
         .swagger-ui .scheme-container {
             padding: 10px 14px !important;
         }
 
-        /* Parameters & response tables: allow horizontal scroll */
         .swagger-ui .opblock-body {
             overflow-x: auto !important;
             -webkit-overflow-scrolling: touch;
