@@ -37,21 +37,65 @@ def get_decorator_info(decorator_list):
     return methods or DEFAULT_METHODS, allow_guest
 
 
+_PLACEHOLDER_TYPE_MAP = {
+    "float": {"type": "number"},
+    "number": {"type": "number"},
+    "int": {"type": "integer"},
+    "integer": {"type": "integer"},
+    "str": {"type": "string"},
+    "string": {"type": "string"},
+    "bool": {"type": "boolean"},
+    "boolean": {"type": "boolean"},
+    "list": {"type": "array", "items": {}},
+    "array": {"type": "array", "items": {}},
+    "dict": {"type": "object"},
+    "object": {"type": "object"},
+}
+
+
+def _parse_typed_block(block):
+    """Parse a dict block containing <type> placeholders like ``{"key": <float>}``.
+
+    Returns a dict of ``{key: openapi_schema}`` tagged with ``__placeholder_schema__``
+    so that ``build_response_schema`` can recognise it, or ``None`` if no
+    ``<type>`` patterns are found.
+    """
+    pairs = re.findall(r'"(\w+)"\s*:\s*<(\w+)>', block)
+    if not pairs:
+        return None
+    schemas = {
+        key: dict(_PLACEHOLDER_TYPE_MAP.get(typ.lower(), {"type": "string"}))
+        for key, typ in pairs
+    }
+    return {"__placeholder_schema__": schemas}
+
+
 def extract_returns_from_docstring(docstring):
     if not docstring:
         return None
-    match = re.search(r"Returns?:\s*(.*)", docstring, re.DOTALL | re.IGNORECASE)
+    # Stop at the next top-level section header (e.g. "Raises:", "Example:")
+    match = re.search(
+        r"Returns?:\s*\n(.*?)(?:\n[ \t]*\n|\n[ \t]*[A-Z]\w*:|\Z)",
+        docstring,
+        re.DOTALL | re.IGNORECASE,
+    )
     if not match:
-        return None
-    returns_block = re.sub(r"^\s*\w+\s*:\s*", "", match.group(1))
-    brace_match = re.search(r"(\{.*\}|\[.*\])", returns_block, re.DOTALL)
+        # Fallback: grab everything after "Returns:"
+        match = re.search(r"Returns?:\s*(.*)", docstring, re.DOTALL | re.IGNORECASE)
+        if not match:
+            return None
+    returns_block = match.group(1).strip()
+    brace_match = re.search(r"(\{[^{}]*\}|\[[^\[\]]*\])", returns_block, re.DOTALL)
     if brace_match:
         block = brace_match.group(1)
+        # Handle <type> placeholder blocks first
+        if re.search(r"<\w+>", block):
+            return _parse_typed_block(block)
         try:
             return json.loads(block.replace("'", '"'))
         except Exception:
             return block
-    return returns_block.strip()
+    return returns_block.strip() or None
 
 
 _PYTHON_TO_OPENAPI = {
@@ -248,7 +292,18 @@ def build_response_schema(return_annotation, example):
     Frappe always wraps the return value under a ``message`` key, so the outer schema
     is ``{message: <inner>}``.  When a JSON example is available its keys are used to
     populate ``properties`` for a richer object schema.
+
+    When the docstring Returns block used ``<type>`` placeholders (e.g. ``{"total": <float>}``)
+    ``example`` will be a ``{"__placeholder_schema__": {key: schema, ...}}`` dict produced
+    by :func:`_parse_typed_block`; this is converted directly to an object schema.
     """
+    # ── Placeholder schema from <type> annotations in docstring ──────────
+    if isinstance(example, dict) and "__placeholder_schema__" in example:
+        properties = example["__placeholder_schema__"]
+        inner: dict = {"type": "object", "properties": properties}
+        return {"type": "object", "properties": {"message": inner}}
+
+    # ── Normal path ───────────────────────────────────────────────────────
     if return_annotation is not None:
         inner = get_openapi_type(return_annotation)
     elif isinstance(example, list):
@@ -258,7 +313,7 @@ def build_response_schema(return_annotation, example):
     else:
         inner = {"type": "string"}
 
-    # When we have a dict example, derive properties from its keys/value types
+    # When we have a real dict example, derive properties from its keys/value types
     if isinstance(example, dict) and inner.get("type") == "object":
         _type_map = {
             bool: "boolean",
@@ -368,8 +423,20 @@ def generate_openapi_static(app_name):
             for method in func["methods"]:
                 response_schema = build_response_schema(func["return_annotation"], func["returns_example"])
                 response_content: dict = {"schema": response_schema}
-                if func["returns_example"] is not None:
-                    response_content["example"] = {"message": func["returns_example"]}
+                example_val = func["returns_example"]
+                if isinstance(example_val, dict) and "__placeholder_schema__" in example_val:
+                    # Build a human-readable example from the placeholder types
+                    _example_defaults = {
+                        "number": 0.0, "integer": 0, "string": "", "boolean": False,
+                        "array": [], "object": {},
+                    }
+                    inner_example = {
+                        k: _example_defaults.get(v.get("type", "string"), "")
+                        for k, v in example_val["__placeholder_schema__"].items()
+                    }
+                    response_content["example"] = {"message": inner_example}
+                elif example_val is not None:
+                    response_content["example"] = {"message": example_val}
 
                 # For non-GET methods, send params as form-encoded request body
                 if method in ("post", "put", "patch", "delete"):
