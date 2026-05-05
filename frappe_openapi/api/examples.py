@@ -119,7 +119,7 @@ def demo_list_items(
 # ---------------------------------------------------------------------------
 # 3. Create item – POST with required + optional params, rich response example
 # ---------------------------------------------------------------------------
-@frappe.whitelist(allow_guest=True, methods=["POST"])
+@frappe.whitelist(methods=["POST"])
 def demo_create_item(
     title: str,
     category: str,
@@ -166,7 +166,7 @@ def demo_create_item(
 # ---------------------------------------------------------------------------
 # 4. Update item – PUT showing optional partial update
 # ---------------------------------------------------------------------------
-@frappe.whitelist(allow_guest=True, methods=["PUT"])
+@frappe.whitelist(methods=["PUT"])
 def demo_update_item(
     item_name: str,
     title: str | None = None,
@@ -203,7 +203,7 @@ def demo_update_item(
 # ---------------------------------------------------------------------------
 # 5. Delete item – DELETE showing boolean response
 # ---------------------------------------------------------------------------
-@frappe.whitelist(allow_guest=True, methods=["DELETE"])
+@frappe.whitelist(methods=["DELETE"])
 def demo_delete_item(
     item_name: str,
     permanent: bool = False,
@@ -313,5 +313,5 @@ def demo_authenticated(
         "resource_id": resource_id,
         "owner": frappe.session.user,
         "data": {},
-        "metadata": {} if include_metadata else None,
+        "metadata": {} if include_metadata else {},
     }

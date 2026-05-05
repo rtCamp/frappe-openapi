@@ -85,9 +85,26 @@ def extract_returns_from_docstring(docstring):
         if not match:
             return None
     returns_block = match.group(1).strip()
-    brace_match = re.search(r"(\{[^{}]*\}|\[[^\[\]]*\])", returns_block, re.DOTALL)
+
+    def _extract_balanced(text, open_ch, close_ch):
+        """Return the first balanced open_ch...close_ch substring, or None."""
+        start = text.find(open_ch)
+        if start == -1:
+            return None
+        depth = 0
+        for i, ch in enumerate(text[start:], start):
+            if ch == open_ch:
+                depth += 1
+            elif ch == close_ch:
+                depth -= 1
+                if depth == 0:
+                    return text[start : i + 1]
+        return None
+
+    raw_block = _extract_balanced(returns_block, "{", "}") or _extract_balanced(returns_block, "[", "]")
+    brace_match = raw_block is not None
     if brace_match:
-        block = brace_match.group(1)
+        block = raw_block
         # Handle <type> placeholder blocks first
         if re.search(r"<\w+>", block):
             return _parse_typed_block(block)
@@ -129,7 +146,7 @@ def get_openapi_type(annotation):
 
     if isinstance(annotation, ast.Constant):
         if annotation.value is None:
-            return {"type": "string", "nullable": True}
+            return {"nullable": True}
         return {"type": "string"}
 
     if isinstance(annotation, ast.Subscript):
@@ -369,11 +386,6 @@ def parse_functions_from_file(file_path):
                 type_schema = doc_info["type_schema"]
             else:
                 type_schema = {"type": "string"}
-
-            # Only use docstring required info when signature doesn't provide defaults
-            if "required" in doc_info and i >= n_required and arg.annotation is None:
-                # Only override if signature doesn't already make it optional
-                pass  # Keep signature-derived status as authoritative
 
             params.append(
                 {
