@@ -1,11 +1,13 @@
-# API Explorer
-
-A beautiful Frappe app to **generate** and **visualize** whitelisted APIs with interactive Swagger UI documentation.
+<div align="center">
+    <h2>Frappe OpenAPI</h2>
+    A Frappe app to <strong>generate</strong> and <strong>visualize</strong> whitelisted APIs with interactive Swagger UI documentation.
+</div>
+<br>
+<div align="center">
+    <img width="1050" alt="image-removebg-preview" src="https://github.com/user-attachments/assets/9c45923e-081f-461c-b3d3-44071afb34be" />
+</div>
 
 ---
-<img width="1339" height="729" alt="Screenshot 2025-07-25 at 10 09 30 AM" src="https://github.com/user-attachments/assets/90279305-347f-4bd3-977a-c7910f0c107b" />
-
-
 
 ## Features
 
@@ -15,14 +17,27 @@ A beautiful Frappe app to **generate** and **visualize** whitelisted APIs with i
 
 ---
 
+## Installation
+
+Run the following commands inside your bench directory:
+
+```bash
+bench get-app https://github.com/rtCamp/frappe-openapi.git
+bench install-app frappe_openapi
+bench migrate
+bench restart
+```
+
+> For a detailed installation guide and advanced configuration, visit the [Wiki](https://github.com/rtCamp/frappe-openapi/wiki).
+
+---
+
 ## How to Use
 
-1. **Install the app** in your Frappe site.
-2. **Run `bench migrate`** to apply changes and update your site.
-3. **Run the OpenAPI generator**.
-4. **Access the API Explorer UI** at `/docs` or `/redoc`.
-5. **Select an app** from the sidebar to view its API documentation.
-6. **Try out endpoints** directly from the Swagger UI.
+1. **Install the app** using the steps above.
+2. **Access the API Explorer UI** at `/docs`.
+3. **Select an app** from the sidebar to view its API documentation.
+4. **Try out endpoints** directly from the Swagger UI.
 
 ---
 
@@ -30,10 +45,10 @@ A beautiful Frappe app to **generate** and **visualize** whitelisted APIs with i
 
 To ensure your APIs are documented correctly:
 
-- **Whitelist your function** using `@frappe.whitelist()` or in `hooks.py`.
-- **Add a detailed Python docstring** to your function, including:
-  - **Description** of what the endpoint does.
-  - **Sample Response** format (JSON).
+- **Whitelist your function** using `@frappe.whitelist()`.
+- **Add a Python docstring** that includes:
+  - A **description** of what the endpoint does.
+  - A **sample response** in JSON format.
 
 **Example:**
 
@@ -56,10 +71,10 @@ def create_customer(name, email):
 - Always describe the endpoint's purpose.
 - Include clear sample response blocks.
 - Keep examples concise and relevant.
-- These doc comments are parsed and shown in the API Explorer UI.
+- These docstrings are parsed and shown in the API Explorer UI.
 
 ---
 
 ## License
 
-agpl-3.0
+[AGPL-3.0](LICENSE)
