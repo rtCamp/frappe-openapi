@@ -9,7 +9,6 @@
 <div align="center">
 <img width="1920" height="965" alt="image" src="https://github.com/user-attachments/assets/f441732b-c903-4005-97c2-c7e3afcd330f" />
 </div>
----
 
 ## Features
 
