@@ -4,7 +4,6 @@ app_publisher = "rtCamp"
 app_description = "Frappe app to generate and visualize whitelisted APIs"
 app_email = "frappe@rtcamp.com"
 app_license = "agpl-3.0"
-app_version = "0.1.0"
 
 # Apps
 # ------------------
