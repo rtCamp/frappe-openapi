@@ -1,12 +1,14 @@
 <div align="center">
+<div align="center">
+    <img width="128" alt="logo" src="https://github.com/user-attachments/assets/9c45923e-081f-461c-b3d3-44071afb34be" />
+</div>
     <h2>Frappe OpenAPI</h2>
     A Frappe app to <strong>generate</strong> and <strong>visualize</strong> whitelisted APIs with interactive Swagger UI documentation.
 </div>
 <br>
 <div align="center">
-    <img width="192" alt="image-removebg-preview" src="https://github.com/user-attachments/assets/9c45923e-081f-461c-b3d3-44071afb34be" />
+<img width="1920" height="965" alt="image" src="https://github.com/user-attachments/assets/f441732b-c903-4005-97c2-c7e3afcd330f" />
 </div>
-
 ---
 
 ## Features
@@ -68,6 +70,7 @@ def create_customer(name, email):
 ```
 
 **Guidelines:**
+
 - Always describe the endpoint's purpose.
 - Include clear sample response blocks.
 - Keep examples concise and relevant.
