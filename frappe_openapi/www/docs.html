@@ -1,119 +1,1018 @@
 {% extends "templates/web.html" %}
 
+{% block head_include %}
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23ab3a6c'/%3E%3Cg transform='translate(4%2C4)' stroke='white' fill='none' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M17 19a1 1 0 0 1-1-1v-2a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2a1 1 0 0 1-1 1z'/%3E%3Cpath d='M17 21v-2'/%3E%3Cpath d='M19 14V6.5a1 1 0 0 0-7 0v11a1 1 0 0 1-7 0V10'/%3E%3Cpath d='M21 21v-2'/%3E%3Cpath d='M3 5V3'/%3E%3Cpath d='M4 10a2 2 0 0 1-2-2V6a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2a2 2 0 0 1-2 2z'/%3E%3Cpath d='M7 5V3'/%3E%3C/g%3E%3C/svg%3E">
+{% endblock %}
+
 {% block page_content %}
 
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.27.1/swagger-ui.min.css"
     integrity="sha512-FCw+cnh2A20omSXcIdoLnqQrVbcPiyAPEjKlSZdj6uIR++Xx0VIduMmFZhzYm/gf7bqmZ7dzP3+WVn2Gfr5TjQ=="
     crossorigin="anonymous" referrerpolicy="no-referrer" />
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.27.1/swagger-ui-bundle.min.js"
     integrity="sha512-5wwTumuGSEhs2cxv8qTPioOYR5ApZvDzEi8iEJ7ENTOzQ9/qLYh9tWKkMFlrYLpEcnHK+TkqvOLJxKSDGOWrfQ=="
     crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.27.1/swagger-ui-standalone-preset.min.js"
     integrity="sha512-yJlD9FXQ7YaxAKXhviHSt/0KqWDCkLFdCnk0Ti23HXDMEQtHLAAWMHZ+POglC1mx/MOUB//h8kci3U1JYrywpQ=="
     crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
 <style>
+    :root {
+        --accent: #ab3a6c;
+        --accent-rgb: 171, 58, 108;
+    }
+
+    *,
+    *::before,
+    *::after {
+        box-sizing: border-box;
+    }
+
     body,
+    .page-body,
     .page-body.full-width {
-        background: #f8f9fa;
+        background: #f8fafc;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
         width: 100%;
         max-width: 100vw;
-        font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+        padding: 0;
+        margin: 0;
     }
 
     .navbar {
         margin-bottom: 0;
     }
 
-    .card {
-        border-radius: 1rem;
+    #api-header {
+        background: #ffffff;
+        border-bottom: 1px solid #e2e8f0;
+        padding: 16px 28px 0;
+        position: sticky;
+        top: 0;
+        z-index: 200;
+        box-shadow: 0 1px 0 #e2e8f0, 0 4px 16px rgba(15, 23, 42, 0.06);
     }
 
-    #swagger-ui {
-        min-height: 70vh;
+    .header-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 14px;
+    }
+
+    .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #0f172a;
+        font-size: 1.1rem;
+        font-weight: 700;
+        letter-spacing: -0.2px;
+        text-decoration: none;
+    }
+
+    .brand-icon {
+        width: 34px;
+        height: 34px;
+        background: var(--accent);
+        border-radius: 9px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        box-shadow: 0 2px 8px rgba(var(--accent-rgb), 0.35);
+    }
+
+    .brand-sub {
+        display: block;
+        font-size: 0.69rem;
+        font-weight: 400;
+        color: #94a3b8;
+        margin-top: 1px;
+        letter-spacing: 0;
+    }
+
+    #app-select {
         background: #fff;
+        border: 1.5px solid #e2e8f0;
+        color: #1e293b;
+        padding: 7px 32px 7px 12px;
+        border-radius: 8px;
+        font-size: 0.84rem;
+        font-family: inherit;
+        cursor: pointer;
+        outline: none;
+        appearance: none;
+        -webkit-appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' fill='%2364748b' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 10px center;
+        min-width: 190px;
+        transition: border-color 0.15s, box-shadow 0.15s;
     }
 
-    @media (max-width: 768px) {
-        .navbar .form-select {
+    #app-select:hover {
+        border-color: var(--accent);
+    }
+
+    #app-select:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.12);
+        outline: none;
+    }
+
+    #app-select option {
+        background: #fff;
+        color: #1e293b;
+    }
+
+    .search-toolbar {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+        padding-bottom: 14px;
+        /* Prevent children from bleeding outside the header */
+        min-width: 0;
+        overflow: hidden;
+    }
+
+    .search-wrap {
+        position: relative;
+        flex: 1;
+        min-width: 200px;
+        max-width: 460px;
+    }
+
+    .search-wrap .ico-search {
+        position: absolute;
+        left: 11px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #94a3b8;
+        pointer-events: none;
+    }
+
+    /* Hide browser default ✕ on search inputs */
+    #api-search::-webkit-search-cancel-button,
+    #api-search::-webkit-search-decoration {
+        -webkit-appearance: none;
+        appearance: none;
+    }
+
+    #api-search {
+        width: 100%;
+        padding: 8px 32px 8px 34px;
+        background: #f8fafc;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 8px;
+        color: #0f172a;
+        font-size: 0.84rem;
+        font-family: inherit;
+        outline: none;
+        transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+    }
+
+    #api-search::placeholder {
+        color: #94a3b8;
+    }
+
+    #api-search:focus {
+        border-color: var(--accent);
+        background: #fff;
+        box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.1);
+    }
+
+    #clear-search {
+        position: absolute;
+        right: 9px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        color: #94a3b8;
+        cursor: pointer;
+        padding: 2px;
+        display: none;
+        line-height: 1;
+    }
+
+    #clear-search:hover {
+        color: #475569;
+    }
+
+    #method-filters {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        flex-shrink: 0;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        max-width: 100%;
+    }
+
+    #method-filters::-webkit-scrollbar {
+        display: none;
+    }
+
+    .method-btn {
+        font-size: 0.68rem;
+        font-weight: 700;
+        padding: 5px 11px;
+        border-radius: 20px;
+        border: 1.5px solid #e2e8f0;
+        cursor: pointer;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+        background: #f8fafc;
+        color: #64748b;
+        transition: all 0.14s;
+        font-family: inherit;
+    }
+
+    .method-btn:hover {
+        border-color: #94a3b8;
+        color: #1e293b;
+        background: #f1f5f9;
+    }
+
+    
+    .method-btn.active-get {
+        background: rgba(97, 175, 254, 0.12);
+        color: #2478c5;
+        border-color: #61affe;
+    }
+
+    .method-btn.active-post {
+        background: rgba(73, 204, 144, 0.12);
+        color: #1a8a5a;
+        border-color: #49cc90;
+    }
+
+    .method-btn.active-put {
+        background: rgba(252, 161, 48, 0.12);
+        color: #b06a00;
+        border-color: #fca130;
+    }
+
+    .method-btn.active-patch {
+        background: rgba(80, 227, 194, 0.12);
+        color: #1a8a7a;
+        border-color: #50e3c2;
+    }
+
+    .method-btn.active-delete {
+        background: rgba(249, 62, 62, 0.12);
+        color: #c41a1a;
+        border-color: #f93e3e;
+    }
+
+    /* Stats pill */
+    #search-results-info {
+        font-size: 0.75rem;
+        color: #64748b;
+        white-space: nowrap;
+        background: #f1f5f9;
+        padding: 4px 12px;
+        border-radius: 20px;
+        border: 1.5px solid #e2e8f0;
+        transition: all 0.2s;
+        font-variant-numeric: tabular-nums;
+    }
+
+    #search-results-info.is-filtered {
+        color: var(--accent);
+        background: #fce7f0;
+        border-color: #f0aac9;
+    }
+
+    #api-content {
+        max-width: 1280px;
+        margin: 24px auto 40px;
+        padding: 0 20px;
+    }
+
+    #swagger-ui-wrap {
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.07), 0 8px 28px rgba(0, 0, 0, 0.07);
+        overflow: hidden;
+        min-height: 60vh;
+    }
+
+    .sw-placeholder {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 220px;
+        color: #94a3b8;
+        font-size: 0.9rem;
+        gap: 8px;
+    }
+
+    .sw-placeholder.error {
+        color: #ef4444;
+    }
+
+    .swagger-ui {
+        font-family: 'Inter', -apple-system, sans-serif !important;
+    }
+
+    .swagger-ui .topbar {
+        display: none !important;
+    }
+
+
+    .swagger-ui .info {
+        margin: 24px 24px 10px !important;
+    }
+
+    .swagger-ui .info .title {
+        font-size: 1.35rem !important;
+        font-weight: 700 !important;
+        color: #0f172a !important;
+    }
+
+    .swagger-ui .info p,
+    .swagger-ui .info li {
+        color: #475569 !important;
+        font-size: 0.875rem !important;
+    }
+
+    .swagger-ui .info a {
+        color: var(--accent) !important;
+    }
+
+    .swagger-ui .scheme-container {
+        background: #f8fafc !important;
+        box-shadow: none !important;
+        border-top: 1px solid #e2e8f0 !important;
+        border-bottom: 1px solid #e2e8f0 !important;
+        padding: 12px 24px !important;
+        margin: 0 !important;
+    }
+
+
+    .swagger-ui .opblock-tag-section {
+        margin-bottom: 8px !important;
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 8px !important;
+        overflow: hidden !important;
+    }
+
+    .swagger-ui .opblock-tag {
+        border-bottom: none !important;
+        margin: 0 !important;
+        padding: 14px 20px !important;
+        font-size: 0.78rem !important;
+        font-weight: 700 !important;
+        color: #0f172a !important;
+        background: #f1f5f9 !important;
+        cursor: pointer;
+        transition: background 0.12s;
+        border-top: none !important;
+        border-left: 4px solid var(--accent) !important;
+        display: flex !important;
+        align-items: center !important;
+        letter-spacing: 0.01em !important;
+    }
+
+    .swagger-ui .opblock-tag:hover {
+        background: #e8edf5 !important;
+    }
+
+    .swagger-ui .opblock-tag a,
+    .swagger-ui .opblock-tag a:hover {
+        color: #0f172a !important;
+        text-decoration: none !important;
+    }
+
+    .swagger-ui .opblock-tag small {
+        color: #64748b !important;
+        font-size: 0.72rem !important;
+        font-weight: 400 !important;
+        margin-left: 6px !important;
+        text-transform: none !important;
+        letter-spacing: 0 !important;
+    }
+
+    /* Tag count badge (injected by JS) */
+    .tag-count-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 22px;
+        height: 19px;
+        padding: 0 6px;
+        background: #fce7f0;
+        color: var(--accent);
+        border-radius: 10px;
+        font-size: 0.68rem;
+        font-weight: 700;
+        margin-left: 8px;
+        vertical-align: middle;
+        flex-shrink: 0;
+    }
+
+    .swagger-ui .opblock {
+        margin: 0 !important;
+        border-radius: 0 !important;
+        border-left-width: 4px !important;  /* color comes from Swagger UI's per-method border-color */
+        border-right: none !important;
+        border-top: none !important;
+        border-bottom: 1px solid #f1f5f9 !important;
+    }
+
+    .swagger-ui .opblock:last-child {
+        border-bottom: none !important;
+    }
+
+    .swagger-ui .opblock-summary {
+        padding: 10px 20px 10px 16px !important;
+    }
+
+    .swagger-ui .opblock-summary-method {
+        border-radius: 6px !important;
+        min-width: 66px !important;
+        font-size: 0.68rem !important;
+        font-weight: 700 !important;
+        padding: 5px 8px !important;
+        text-align: center !important;
+    }
+
+    .swagger-ui .opblock-summary-path {
+        font-family: 'Fira Code', 'JetBrains Mono', 'Roboto Mono', ui-monospace, monospace !important;
+        font-size: 0.82rem !important;
+        color: #1e293b !important;
+        word-break: break-all !important;
+        overflow-wrap: anywhere !important;
+        min-width: 0 !important;
+    }
+
+    .swagger-ui .opblock-summary-description {
+        color: #64748b !important;
+        font-size: 0.79rem !important;
+    }
+
+    .swagger-ui .opblock-body {
+        background: #fafbfc !important;
+    }
+
+    .swagger-ui .opblock-section-header {
+        background: #f1f5f9 !important;
+    }
+
+    .swagger-ui .opblock-section-header h4 {
+        color: #475569 !important;
+        font-size: 0.78rem !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.5px !important;
+    }
+
+
+    .swagger-ui table.responses-table {
+        border: none !important;
+    }
+
+    .swagger-ui .response-col_status {
+        font-weight: 600 !important;
+    }
+
+    .swagger-ui .response-col_description {
+        color: #475569 !important;
+    }
+
+    .swagger-ui .btn.execute {
+        background: var(--accent) !important;
+        border-color: var(--accent) !important;
+        color: #fff !important;
+        border-radius: 8px !important;
+        font-family: inherit !important;
+        font-size: 0.8rem !important;
+        font-weight: 600 !important;
+        padding: 7px 20px !important;
+        letter-spacing: 0.2px !important;
+        box-shadow: 0 1px 4px rgba(var(--accent-rgb), 0.25) !important;
+        transition: filter 0.15s, box-shadow 0.15s !important;
+    }
+
+    .swagger-ui .btn.execute:hover {
+        filter: brightness(1.1) !important;
+        box-shadow: 0 2px 8px rgba(var(--accent-rgb), 0.35) !important;
+    }
+
+    .swagger-ui .btn-clear {
+        background: #fff !important;
+        border: 1.5px solid #e2e8f0 !important;
+        color: #475569 !important;
+        border-radius: 8px !important;
+        font-family: inherit !important;
+        font-size: 0.8rem !important;
+        font-weight: 600 !important;
+        padding: 7px 20px !important;
+        letter-spacing: 0.2px !important;
+        transition: border-color 0.15s, color 0.15s !important;
+    }
+
+    .swagger-ui .btn-clear:hover {
+        border-color: #94a3b8 !important;
+        color: #1e293b !important;
+    }
+
+
+    .swagger-ui .authorization__btn svg {
+        fill: var(--accent) !important;
+    }
+
+    .swagger-ui .btn.authorize {
+        border-color: var(--accent) !important;
+        color: var(--accent) !important;
+    }
+
+    .swagger-ui .btn.authorize:hover {
+        background: var(--accent) !important;
+        color: #fff !important;
+    }
+
+    .swagger-ui .opblock-summary-control svg,
+    .swagger-ui .expand-operation svg,
+    .swagger-ui .opblock-tag svg,
+    .swagger-ui .arrow {
+        width: 14px !important;
+        height: 14px !important;
+    }
+
+    .swagger-ui .opblock-summary:focus,
+    .swagger-ui .opblock-summary:focus-visible,
+    .swagger-ui .opblock-summary-control:focus,
+    .swagger-ui .opblock-summary-control:focus-visible,
+    .swagger-ui .opblock-tag:focus,
+    .swagger-ui .opblock-tag:focus-visible,
+    .swagger-ui .opblock:focus,
+    .swagger-ui .opblock:focus-within,
+    .swagger-ui button:focus:not(.btn),
+    .swagger-ui button:focus-visible:not(.btn) {
+        outline: none !important;
+        box-shadow: none !important;
+    }
+
+
+    @media (max-width: 900px) {
+        .search-wrap {
+            max-width: 340px;
+        }
+    }
+
+    @media (max-width: 640px) {
+
+        #api-header {
+            padding: 12px 14px 0;
+        }
+
+        .header-top {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .brand {
+            font-size: 1rem;
+        }
+
+        #app-select {
+            width: 100%;
+            min-width: 0;
+            font-size: 0.9rem;
+            padding: 9px 32px 9px 12px;
+        }
+
+        .search-toolbar {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 8px;
+            padding-bottom: 12px;
+        }
+
+        .search-wrap {
             max-width: 100%;
+            min-width: 0;
+            width: 100%;
+        }
+
+        #api-search {
+            font-size: 0.9rem;
+            padding: 10px 34px 10px 36px;
+        }
+
+        #method-filters {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            flex-wrap: nowrap;
+            gap: 6px;
+            padding-bottom: 2px;
+        }
+
+        #method-filters::-webkit-scrollbar {
+            display: none;
+        }
+
+        .method-btn {
+            flex-shrink: 0;
+            padding: 7px 14px;
+            font-size: 0.72rem;
+            touch-action: manipulation;
+        }
+
+        #search-results-info {
+            align-self: flex-start;
+        }
+
+        #api-content {
+            margin: 12px 0 24px;
+            padding: 0 10px;
+        }
+
+        #swagger-ui-wrap {
+            border-radius: 8px;
+        }
+
+        .swagger-ui .opblock-summary {
+            padding: 10px 12px !important;
+            flex-wrap: wrap !important;
+            gap: 4px !important;
+        }
+
+        .swagger-ui .opblock-summary-method {
+            min-width: 56px !important;
+            flex-shrink: 0 !important;
+        }
+
+        .swagger-ui .opblock-summary-path {
+            font-size: 0.74rem !important;
+            word-break: break-all !important;
+            overflow-wrap: anywhere !important;
+            flex: 1 1 0 !important;
+            min-width: 0 !important;
+        }
+
+        .swagger-ui .opblock-summary-description {
+            width: 100% !important;
+            font-size: 0.74rem !important;
+            padding-left: 0 !important;
+        }
+
+        .swagger-ui .opblock-tag {
+            padding: 11px 14px !important;
+            font-size: 0.8rem !important;
+        }
+
+        .swagger-ui .info {
+            margin: 16px 14px 8px !important;
+        }
+
+        .swagger-ui .info .title {
+            font-size: 1.1rem !important;
+        }
+
+        .swagger-ui .scheme-container {
+            padding: 10px 14px !important;
+        }
+
+        .swagger-ui .opblock-body {
+            overflow-x: auto !important;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .swagger-ui table {
+            min-width: 480px !important;
         }
     }
 </style>
 
-<!-- Top Navbar for App Selector -->
-<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm mb-4" style="border-radius: 1rem;">
-    <div class="container-fluid">
-        <!-- <span class="navbar-brand fw-bold fs-3"
-            style="font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif; letter-spacing: 1px; color: #5e64ff;">
-            API Explorer <span class="fw-normal" style="color: #222;">- Swagger UI</span>
-        </span> -->
-        <h3>Frappe Open API</h3>
-        <form class="d-flex ms-auto align-items-center">
-            <select id="app-select" class="form-select" style="max-width: 300px;">
-                {% for app in apps %}
-                <option value="{{ app }}" {% if app==default_app %}selected{% endif %}>{{ app_titles[app] }}</option>
-                {% endfor %}
-            </select>
-        </form>
-    </div>
-</nav>
-
-<!-- Main Content -->
-<div class="page-body full-width">
-    <div class="card shadow-sm mb-4" style="border-radius: 1rem;">
-        <div class="card-body">
-            <div id="swagger-ui"></div>
+<!-- Header -->
+<div id="api-header">
+    <div class="header-top">
+        <div class="brand">
+            <div class="brand-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke="white" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="lucide lucide-cable-icon lucide-cable">
+                    <path d="M17 19a1 1 0 0 1-1-1v-2a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2a1 1 0 0 1-1 1z" />
+                    <path d="M17 21v-2" />
+                    <path d="M19 14V6.5a1 1 0 0 0-7 0v11a1 1 0 0 1-7 0V10" />
+                    <path d="M21 21v-2" />
+                    <path d="M3 5V3" />
+                    <path d="M4 10a2 2 0 0 1-2-2V6a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2a2 2 0 0 1-2 2z" />
+                    <path d="M7 5V3" />
+                </svg>
+            </div>
+            <div>
+                Frappe OpenAPI
+                <span class="brand-sub">Interactive API Explorer</span>
+            </div>
         </div>
+        <select id="app-select">
+            {% for app in apps %}
+            <option value="{{ app }}">{{ app_titles[app] }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div class="search-toolbar">
+        <div class="search-wrap">
+            <svg class="ico-search" xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor"
+                viewBox="0 0 16 16">
+                <path
+                    d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.099zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" />
+            </svg>
+            <input id="api-search" type="search" placeholder="Search endpoints, paths, tags, parameters…"
+                autocomplete="off" spellcheck="false">
+            <button id="clear-search" title="Clear search" aria-label="Clear search">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" viewBox="0 0 16 16">
+                    <path
+                        d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854z" />
+                </svg>
+            </button>
+        </div>
+        <div id="method-filters">
+            <button class="method-btn" data-method="get">GET</button>
+            <button class="method-btn" data-method="post">POST</button>
+            <button class="method-btn" data-method="put">PUT</button>
+            <button class="method-btn" data-method="patch">PATCH</button>
+            <button class="method-btn" data-method="delete">DELETE</button>
+        </div>
+        <span id="search-results-info"></span>
     </div>
 </div>
 
+<div id="api-content">
+    <div id="swagger-ui-wrap">
+        <div id="swagger-ui"></div>
+    </div>
+</div>
 
 <script>
     const apps = [
         {% for app in apps %}
     "{{ app }}"{% if not loop.last %}, {% endif %}
     {% endfor %}
-    ];
+];
+    const appTitles = {
+        {% for app in apps %}
+        "{{ app }}": "{{ app_titles[app] }}"{% if not loop.last %},{% endif %}
+        {% endfor %}
+    };
     const defaultApp = "{{ default_app }}";
-    let currentTheme = "agate"; // default theme
+    const LS_KEY = 'openapi_last_app';
+    const HTTP_METHODS = ['get', 'post', 'put', 'patch', 'delete', 'head', 'options'];
 
-    function loadSwagger(appName) {
-        const url = `/files/openapi/openapi_${appName}.json`;
+    let fullSpec = null;
+    let activeMethods = new Set();
+    let searchDebounce = null;
+    let countObserver = null;
+
+    function getSavedApp() {
+        try {
+            const saved = localStorage.getItem(LS_KEY);
+            return (saved && apps.includes(saved)) ? saved : defaultApp;
+        } catch (e) { return defaultApp; }
+    }
+    function saveApp(name) {
+        try { localStorage.setItem(LS_KEY, name); } catch (e) { }
+    }
+
+    function countOps(spec) {
+        let n = 0;
+        for (const item of Object.values(spec.paths || {}))
+            for (const m of Object.keys(item))
+                if (HTTP_METHODS.includes(m)) n++;
+        return n;
+    }
+
+    function buildTagCounts(spec) {
+        const counts = {};
+        for (const item of Object.values(spec.paths || {}))
+            for (const [m, op] of Object.entries(item)) {
+                if (!HTTP_METHODS.includes(m)) continue;
+                for (const tag of (op.tags || ['default']))
+                    counts[tag] = (counts[tag] || 0) + 1;
+            }
+        return counts;
+    }
+
+    // Inject count badges into tag section headers via MutationObserver
+    function startCountInjector(tagCounts) {
+        if (countObserver) countObserver.disconnect();
+
+        function inject() {
+            document.querySelectorAll('.opblock-tag[data-tag]').forEach(el => {
+                if (el.querySelector('.tag-count-badge')) return;
+                const tag = el.getAttribute('data-tag');
+                const count = tagCounts[tag];
+                if (count == null) return;
+                // Find the tag name span — it's the first <span> inside the <a> or directly
+                const anchor = el.querySelector('a');
+                const nameSpan = anchor ? anchor.querySelector('span') || anchor : el.querySelector('span');
+                if (!nameSpan) return;
+                const badge = document.createElement('span');
+                badge.className = 'tag-count-badge';
+                badge.textContent = count;
+                nameSpan.after(badge);
+            });
+        }
+
+        countObserver = new MutationObserver(inject);
+        countObserver.observe(document.getElementById('swagger-ui'), { childList: true, subtree: true });
+        inject();
+    }
+
+    function renderSwagger(spec, isFiltered) {
         document.getElementById('swagger-ui').innerHTML = '';
+        const tagCounts = buildTagCounts(spec);
         SwaggerUIBundle({
-            url: url,
+            spec,
             dom_id: '#swagger-ui',
             deepLinking: true,
-            filter: true,
+            filter: false,
             displayRequestDuration: true,
-            syntaxHighlight: {
-                activated: true,
-                theme: currentTheme
-            },
-            presets: [
-                SwaggerUIBundle.presets.apis,
-                SwaggerUIStandalonePreset
-            ],
-            plugins: [
-                SwaggerUIBundle.plugins.DownloadUrl
-            ],
-            layout: "BaseLayout",
-            requestInterceptor: (request) => {
-                request.headers["X-Frappe-CSRF-Token"] = null;
-                return request;
-            },
-            docExpansion: "none",
+            syntaxHighlight: { activated: true, theme: 'agate' },
+            presets: [SwaggerUIBundle.presets.apis, SwaggerUIStandalonePreset],
+            plugins: [SwaggerUIBundle.plugins.DownloadUrl],
+            layout: 'BaseLayout',
+            requestInterceptor: req => { req.headers['X-Frappe-CSRF-Token'] = null; return req; },
+            docExpansion: isFiltered ? 'list' : 'none',
             persistAuthorization: true,
         });
+        startCountInjector(tagCounts);
     }
 
-    if (apps.length) {
-        loadSwagger(defaultApp);
+    // Score an operation against a query string. Higher = more relevant, 0 = no match.
+    // Priority: path/function-name > summary > tag > param name > description
+    function scoreOp(q, path, op) {
+        const pathLc = path.toLowerCase();
+        const fnName = pathLc.split('/').pop() || '';
+        const summary = (op.summary || '').toLowerCase();
+        const desc = (op.description || '').toLowerCase();
+        const tags = (op.tags || []).map(t => t.toLowerCase());
+        const paramText = (op.parameters || [])
+            .map(p => `${p.name} ${p.description || ''}`.toLowerCase()).join(' ');
+
+        let score = 0;
+
+        if (fnName === q) score += 100;
+        else if (fnName.startsWith(q)) score += 88;
+        else if (fnName.includes(q)) score += 72;
+        else if (pathLc.includes(q)) score += 60;
+
+        if (summary.startsWith(q)) score += 55;
+        else if (summary.includes(q)) score += 42;
+
+        if (tags.some(t => t === q)) score += 48;
+        else if (tags.some(t => t.includes(q))) score += 35;
+
+        if (paramText.includes(q)) score += 28;
+
+        if (desc.includes(q)) score += 15;
+
+        return score;
     }
+
+    function buildFilteredSpec(query, methods) {
+        if (!fullSpec) return null;
+
+        const q = query.trim().toLowerCase();
+        const filterMethods = methods.size > 0;
+        const filterQuery = q.length > 0;
+        const isFiltered = filterQuery || filterMethods;
+
+        const totalOps = countOps(fullSpec);
+        const matchedTags = new Set();
+        let matchCount = 0;
+
+        const scoredEntries = [];
+
+        for (const [path, pathItem] of Object.entries(fullSpec.paths || {})) {
+            const filteredOps = {};
+            let maxScore = 0;
+
+            for (const [method, op] of Object.entries(pathItem)) {
+                if (!HTTP_METHODS.includes(method)) continue;
+
+                if (filterMethods && !methods.has(method)) continue;
+
+                if (filterQuery) {
+                    const s = scoreOp(q, path, op);
+                    if (s === 0) continue;
+                    maxScore = Math.max(maxScore, s);
+                }
+
+                filteredOps[method] = op;
+                matchCount++;
+                (op.tags || ['default']).forEach(t => matchedTags.add(t));
+            }
+
+            if (Object.keys(filteredOps).length) {
+                const extra = Object.fromEntries(
+                    Object.entries(pathItem).filter(([k]) => !HTTP_METHODS.includes(k))
+                );
+                scoredEntries.push([path, maxScore, { ...extra, ...filteredOps }]);
+            }
+        }
+
+        if (filterQuery) {
+            scoredEntries.sort((a, b) => b[1] - a[1]);
+        }
+
+        const filteredPaths = Object.fromEntries(
+            scoredEntries.map(([p, , item]) => [p, item])
+        );
+
+        const info = document.getElementById('search-results-info');
+        if (isFiltered) {
+            info.textContent = `${matchCount} of ${totalOps} matched`;
+            info.classList.add('is-filtered');
+        } else {
+            info.textContent = `${totalOps} endpoints`;
+            info.classList.remove('is-filtered');
+        }
+
+        // When filtering, hide tag sections that have no matched operations
+        const filteredTags = isFiltered
+            ? (fullSpec.tags || []).filter(t => matchedTags.has(t.name))
+            : (fullSpec.tags || []);
+
+        return { ...fullSpec, paths: filteredPaths, tags: filteredTags };
+    }
+
+    function applyFilters() {
+        const q = document.getElementById('api-search').value;
+        const isFiltered = q.trim().length > 0 || activeMethods.size > 0;
+        const filtered = buildFilteredSpec(q, activeMethods);
+        if (filtered) renderSwagger(filtered, isFiltered);
+        document.getElementById('clear-search').style.display = q.length ? 'block' : 'none';
+    }
+
+    function loadSwagger(appName) {
+        saveApp(appName);
+        document.title = `${appTitles[appName] || appName} | API Docs`;
+        document.getElementById('swagger-ui').innerHTML =
+            '<div class="sw-placeholder"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/><path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/></svg>Loading…</div>';
+        document.getElementById('search-results-info').textContent = '';
+        document.getElementById('search-results-info').classList.remove('is-filtered');
+
+        fetch(`/files/openapi/openapi_${appName}.json`)
+            .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
+            .then(spec => { fullSpec = spec; applyFilters(); })
+            .catch(() => {
+                document.getElementById('swagger-ui').innerHTML =
+                    '<div class="sw-placeholder error">Failed to load spec for this app.</div>';
+            });
+    }
+
+    // Events
+    document.getElementById('api-search').addEventListener('input', function () {
+        clearTimeout(searchDebounce);
+        searchDebounce = setTimeout(applyFilters, 200);
+    });
+
+    document.getElementById('clear-search').addEventListener('click', function () {
+        document.getElementById('api-search').value = '';
+        this.style.display = 'none';
+        applyFilters();
+    });
+
+    document.querySelectorAll('#method-filters .method-btn').forEach(btn => {
+        btn.addEventListener('click', function () {
+            const m = this.dataset.method;
+            if (activeMethods.has(m)) {
+                activeMethods.delete(m);
+                this.className = 'method-btn';
+            } else {
+                activeMethods.add(m);
+                this.className = `method-btn active-${m}`;
+            }
+            applyFilters();
+        });
+    });
 
     document.getElementById('app-select').addEventListener('change', function () {
+        document.getElementById('api-search').value = '';
+        document.getElementById('clear-search').style.display = 'none';
+        activeMethods.clear();
+        document.querySelectorAll('#method-filters .method-btn').forEach(b => b.className = 'method-btn');
         loadSwagger(this.value);
     });
+
+    const initialApp = getSavedApp();
+    document.getElementById('app-select').value = initialApp;
+    if (apps.length) loadSwagger(initialApp);
 </script>
 {% endblock %}
