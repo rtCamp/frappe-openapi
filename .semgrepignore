@@ -28,4 +28,3 @@ test*.py
 
 # Markdown files
 *.md
-frappe_skeleton/__init__.py
