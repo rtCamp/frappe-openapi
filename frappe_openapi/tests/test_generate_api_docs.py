@@ -110,9 +110,9 @@ class TestGetDecoratorInfo(IntegrationTestCase):
 
     def test_methods_list_with_two_strings(self):
         """get_decorator_info parses `methods=["GET", "POST"]` to `["get", "post"]`."""
-        fn = parse_first_function('@frappe.whitelist(methods=["POST"])\ndef f():\n    pass\n')
+        fn = parse_first_function('@frappe.whitelist(methods=["GET", "POST"])\ndef f():\n    pass\n')
         methods, allow_guest = get_decorator_info(fn.decorator_list)
-        self.assertEqual(methods, ["post"])
+        self.assertEqual(methods, ["get", "post"])
         self.assertFalse(allow_guest)
 
     def test_methods_single_string(self):
