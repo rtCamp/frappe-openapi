@@ -59,7 +59,7 @@ def extract_returns_from_docstring(docstring):
 
 
 def parse_functions_from_file(file_path):
-    with open(file_path, encoding="utf-8") as f:
+    with open(file_path, encoding="utf-8") as f:  # nosemgrep schema is in json file which needs to be read.
         tree = ast.parse(f.read(), filename=file_path)
     return [
         {
@@ -193,7 +193,7 @@ def generate_openapi_for_all_apps():
         openapi["info"]["version"] = app_version
         output_file = os.path.join(public_folder, f"openapi_{app_name}.json")
         try:
-            with open(output_file, "w", encoding="utf-8") as f:
+            with open(output_file, "w", encoding="utf-8") as f:  # nosemgrep schema needs to be written.
                 json.dump(openapi, f, indent=2)
             update_progress_bar("Generating OpenAPI spec", i, total)
         except Exception as e:
