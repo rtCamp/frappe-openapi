@@ -50,7 +50,8 @@ def _check_demo_enabled():
 # ---------------------------------------------------------------------------
 # 1. Health check - minimal, guest, GET
 # ---------------------------------------------------------------------------
-@frappe.whitelist(allow_guest=True, methods=["GET"])  # nosemgrep demo endpoint, disabled outside developer mode
+# nosemgrep: frappe-semgrep.rules.security.guest-whitelisted-method
+@frappe.whitelist(allow_guest=True, methods=["GET"])
 def demo_health_check() -> dict[str, Any]:
     """Return a simple liveness probe for the API.
 
@@ -74,7 +75,9 @@ def demo_health_check() -> dict[str, Any]:
 # ---------------------------------------------------------------------------
 # 2. List items - GET with typed query params and pagination
 # ---------------------------------------------------------------------------
-@frappe.whitelist(allow_guest=True, methods=["GET"])  # nosemgrep demo endpoint, disabled outside developer mode
+# Demo endpoint: gated by developer mode or the frappe_openapi_enable_demos site config.
+# nosemgrep: frappe-semgrep.rules.security.guest-whitelisted-method
+@frappe.whitelist(allow_guest=True, methods=["GET"])
 def demo_list_items(
     page: int = 1,
     page_size: int = 20,
@@ -237,7 +240,8 @@ def demo_delete_item(
 # ---------------------------------------------------------------------------
 # 6. Upload file - POST with binary / mixed types
 # ---------------------------------------------------------------------------
-@frappe.whitelist(allow_guest=True, methods=["POST"])  # nosemgrep demo endpoint, disabled outside developer mode
+# nosemgrep: frappe-semgrep.rules.security.guest-whitelisted-method
+@frappe.whitelist(allow_guest=True, methods=["POST"])
 def demo_upload_file(
     file_url: str,
     file_name: str | None = None,

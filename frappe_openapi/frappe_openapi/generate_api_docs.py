@@ -357,7 +357,8 @@ def build_response_schema(return_annotation, example):
 
 
 def parse_functions_from_file(file_path):
-    with open(file_path, encoding="utf-8") as f:  # nosemgrep schema is in json file which needs to be read.
+    # nosemgrep: frappe-semgrep.rules.security.frappe-security-file-traversal
+    with open(file_path, encoding="utf-8") as f:
         tree = ast.parse(f.read(), filename=file_path)
 
     result = []
@@ -588,7 +589,10 @@ def generate_openapi_for_all_apps():
         openapi["info"]["version"] = app_version
         output_file = os.path.join(public_folder, f"openapi_{app_name}.json")
         try:
-            with open(output_file, "w", encoding="utf-8") as f:  # nosemgrep schema needs to be written.
+            # Writes the generated OpenAPI spec JSON to the app's public folder;
+            # the path is built from installed app names, not from user input.
+            # nosemgrep: frappe-semgrep.rules.security.frappe-security-file-traversal
+            with open(output_file, "w", encoding="utf-8") as f:
                 json.dump(openapi, f, indent=2)
             update_progress_bar("Generating OpenAPI spec", i, total)
         except Exception as e:
