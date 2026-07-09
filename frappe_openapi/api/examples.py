@@ -9,14 +9,14 @@
 # parser picks it up, and each docstring exercises a different aspect of the
 # comment format:
 #
-#   1. demo_health_check   – minimal GET, guest-accessible, no parameters
-#   2. demo_list_items     – GET with multiple typed query params, pagination
-#   3. demo_create_item    – POST with required + optional body params, rich
+#   1. demo_health_check   - minimal GET, guest-accessible, no parameters
+#   2. demo_list_items     - GET with multiple typed query params, pagination
+#   3. demo_create_item    - POST with required + optional body params, rich
 #                            Returns example that drives the response schema
-#   4. demo_update_item    – PUT showing path-style name in params, optional fields
-#   5. demo_delete_item    – DELETE showing boolean response
-#   6. demo_upload_file    – POST with binary / mixed types
-#   7. demo_authenticated  – endpoint that requires auth (no allow_guest)
+#   4. demo_update_item    - PUT showing path-style name in params, optional fields
+#   5. demo_delete_item    - DELETE showing boolean response
+#   6. demo_upload_file    - POST with binary / mixed types
+#   7. demo_authenticated  - endpoint that requires auth (no allow_guest)
 # ---------------------------------------------------------------------------
 
 from __future__ import annotations
@@ -28,25 +28,29 @@ import frappe
 
 def _check_demo_enabled():
     """Check if demo endpoints should be enabled.
-    
+
     Demo endpoints are only enabled in:
     1. Developer mode
     2. When frappe_openapi_enable_demos site config is True
     """
     if frappe.conf.developer_mode:
         return True
-    
+
     if frappe.conf.get("frappe_openapi_enable_demos"):
         return True
-        
-    frappe.throw("Demo endpoints are disabled in production. Enable developer mode or set frappe_openapi_enable_demos=1 in site_config.json", 
-                 frappe.PermissionError)
+
+    frappe.throw(
+        frappe._(
+            "Demo endpoints are disabled in production. Enable developer mode or set frappe_openapi_enable_demos=1 in site_config.json"
+        ),
+        frappe.PermissionError,
+    )
 
 
 # ---------------------------------------------------------------------------
-# 1. Health check – minimal, guest, GET
+# 1. Health check - minimal, guest, GET
 # ---------------------------------------------------------------------------
-@frappe.whitelist(allow_guest=True, methods=["GET"])
+@frappe.whitelist(allow_guest=True, methods=["GET"])  # nosemgrep demo endpoint, disabled outside developer mode
 def demo_health_check() -> dict[str, Any]:
     """Return a simple liveness probe for the API.
 
@@ -68,9 +72,9 @@ def demo_health_check() -> dict[str, Any]:
 
 
 # ---------------------------------------------------------------------------
-# 2. List items – GET with typed query params and pagination
+# 2. List items - GET with typed query params and pagination
 # ---------------------------------------------------------------------------
-@frappe.whitelist(allow_guest=True, methods=["GET"])
+@frappe.whitelist(allow_guest=True, methods=["GET"])  # nosemgrep demo endpoint, disabled outside developer mode
 def demo_list_items(
     page: int = 1,
     page_size: int = 20,
@@ -117,7 +121,7 @@ def demo_list_items(
 
 
 # ---------------------------------------------------------------------------
-# 3. Create item – POST with required + optional params, rich response example
+# 3. Create item - POST with required + optional params, rich response example
 # ---------------------------------------------------------------------------
 @frappe.whitelist(methods=["POST"])
 def demo_create_item(
@@ -164,7 +168,7 @@ def demo_create_item(
 
 
 # ---------------------------------------------------------------------------
-# 4. Update item – PUT showing optional partial update
+# 4. Update item - PUT showing optional partial update
 # ---------------------------------------------------------------------------
 @frappe.whitelist(methods=["PUT"])
 def demo_update_item(
@@ -201,7 +205,7 @@ def demo_update_item(
 
 
 # ---------------------------------------------------------------------------
-# 5. Delete item – DELETE showing boolean response
+# 5. Delete item - DELETE showing boolean response
 # ---------------------------------------------------------------------------
 @frappe.whitelist(methods=["DELETE"])
 def demo_delete_item(
@@ -231,9 +235,9 @@ def demo_delete_item(
 
 
 # ---------------------------------------------------------------------------
-# 6. Upload file – POST with binary / mixed types
+# 6. Upload file - POST with binary / mixed types
 # ---------------------------------------------------------------------------
-@frappe.whitelist(allow_guest=True, methods=["POST"])
+@frappe.whitelist(allow_guest=True, methods=["POST"])  # nosemgrep demo endpoint, disabled outside developer mode
 def demo_upload_file(
     file_url: str,
     file_name: str | None = None,
@@ -259,7 +263,7 @@ def demo_upload_file(
                  (default: True).
         max_width (int, optional): Resize image so its width does not exceed this value
                   in pixels (aspect ratio preserved).  No resizing when omitted.
-        quality (int, optional): JPEG/WebP encoding quality 1–100 (default: 85).
+        quality (int, optional): JPEG/WebP encoding quality 1-100 (default: 85).
                 Only applies when ``optimize`` is True.
 
     Returns:
@@ -277,7 +281,7 @@ def demo_upload_file(
 
 
 # ---------------------------------------------------------------------------
-# 7. Authenticated endpoint – requires Bearer token / API key
+# 7. Authenticated endpoint - requires Bearer token / API key
 # ---------------------------------------------------------------------------
 @frappe.whitelist(methods=["GET"])
 def demo_authenticated(
@@ -313,5 +317,5 @@ def demo_authenticated(
         "resource_id": resource_id,
         "owner": frappe.session.user,
         "data": {},
-        "metadata": {} if include_metadata else {},
+        "metadata": {},
     }

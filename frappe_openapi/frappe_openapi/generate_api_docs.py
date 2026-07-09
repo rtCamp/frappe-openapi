@@ -277,7 +277,7 @@ def parse_docstring_args(docstring):
     def _flush():
         if not current_param:
             return
-        description = " ".join(filter(None, [l.strip() for l in current_desc_lines]))
+        description = " ".join(line.strip() for line in current_desc_lines if line.strip())
         parts = [p.strip().lower() for p in current_type_info.split(",")]
         required = "optional" not in parts
         type_name = parts[0] if parts and parts[0] else "string"
@@ -357,7 +357,7 @@ def build_response_schema(return_annotation, example):
 
 
 def parse_functions_from_file(file_path):
-    with open(file_path, encoding="utf-8") as f:
+    with open(file_path, encoding="utf-8") as f:  # nosemgrep schema is in json file which needs to be read.
         tree = ast.parse(f.read(), filename=file_path)
 
     result = []
@@ -588,7 +588,7 @@ def generate_openapi_for_all_apps():
         openapi["info"]["version"] = app_version
         output_file = os.path.join(public_folder, f"openapi_{app_name}.json")
         try:
-            with open(output_file, "w", encoding="utf-8") as f:
+            with open(output_file, "w", encoding="utf-8") as f:  # nosemgrep schema needs to be written.
                 json.dump(openapi, f, indent=2)
             update_progress_bar("Generating OpenAPI spec", i, total)
         except Exception as e:
